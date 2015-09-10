@@ -1,0 +1,33 @@
+
+<div id="global_alert" class="alert alert-danger" style="display: none;">
+    <button id="global_alert_close" type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <span id="global_alert_msg"></span>
+</div>
+
+{% if form.errors %}
+    <div class="alert alert-danger alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <ul>
+            <li><strong>Please correct the following errors:</strong></li>
+            {% for error in form.non_field_errors %}
+                <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-dismissable
+                                       {% if message.tags == 'error' %}
+                                            alert-danger
+                                       {% elif message.tags == 'success' %}
+                                           alert-success
+                                       {% elif message.tags == 'warning' %}
+                                           alert-warning
+                                       {% endif %}">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+{% endif %}

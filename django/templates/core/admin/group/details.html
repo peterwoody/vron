@@ -1,0 +1,92 @@
+{% extends "_layouts/admin.html" %}
+{% load staticfiles %}
+
+{% block head %}
+
+    {{ block.super }}
+		
+	<script type="text/javascript">
+
+		/**
+		 * Jquery On Load
+		 *
+		 */
+		$(document).ready(function() {
+			
+			// funcoes de onload definidos pelo controller
+			{{ on_load|default:'' }}
+			
+		});
+
+		
+	</script>
+	
+{% endblock head %}
+
+	
+
+{% block content %}
+
+
+            <div class="row">
+            
+                <div class="col-lg-12">
+                    <h1 class="page-header">View Group Details</h1>
+                </div>
+                
+            </div>
+            
+            {% include "admin/_common/status.html" %}
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            Group ID# {{ group.id }}
+                        </div>
+                                                
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                
+                                	<dl class="dl-horizontal">
+		                                
+		                                <dt>Name:</dt>
+		                                <dd>{{ group.name }}</dd>
+		                                
+		                                <dt>Permissions(s):</dt>
+		                                <dd>
+                                            {% for permission in group.permissions.all %}
+                                                - {{ permission.name }} <br />
+                                            {% endfor %}
+                                        </dd>
+		                                
+		                            </dl>
+		                            
+		                            <div class="text-center buttons">
+		                            	<a href="{% url 'admin:core:groups' %}" class="btn btn-default"><i class="fa fa-arrow-left"></i>Go Back</a>
+		                                <a href="{% url 'admin:core:group_edit' group.id %}" class="btn btn-default"><i class="fa fa-edit"></i>Edit Data</a>
+		                                <a href="#" onclick="confirm_delete( '{% url 'admin:core:group_delete' group.id %}' )" class="btn btn-danger"><i class="fa fa-trash-o"></i>Delete</a>
+									</div>
+                                    
+                                </div>
+
+                            </div>
+                            
+                        </div>
+                   
+                    </div>
+                    
+                </div>
+            
+            </div>
+
+{% endblock content %}
+
+
+
+
+
+
+

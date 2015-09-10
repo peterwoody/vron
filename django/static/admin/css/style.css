@@ -1,0 +1,92 @@
+
+/* Admin Logo */
+.navbar-default .navbar-brand img {
+	margin-right: 10px;
+}
+
+/* Background and button for Login */
+body.login {
+    background-color: #643384;
+    background-image: url('../img/background.jpg');
+    background-size: 100% auto;
+    background-repet: no-repeat;
+}
+.btn-login {
+    color: #fff;
+    background-color: #4B2C5F;
+    border-color: #4B2C5F;
+}
+.btn-login:hover, .btn-login:active {
+    color: #D5CFCF;
+}
+
+/* Link Colors on ADMIN */
+a{
+    color: #86728F;
+}
+a:hover, a:active{
+    color: #463A4B;
+}
+
+a.delete-row{
+    color: #a94442;
+    text-decoration: underline;
+}
+a.delete-row:hover, a:active{
+    color: #463A4B;
+}
+
+a.add-row{
+    color: #428bca;
+    text-decoration: underline;
+}
+a.add-row:hover, a:active{
+    color: #428bca;
+}
+
+/* Extra validation styles */
+div.has-error ul {
+    color: #a94442;
+}
+
+/* Bootstratp dropdown */
+.dropdown-menu.left {
+	right: 0;
+	left: auto;
+}
+.dropdown-menu>li>a>i, .panel-body a i, .panel-body button i, .buttons a i, .buttons button i {
+	margin-right: 5px;
+}
+
+/* Datatable tr hover colors */
+#datatable_data tr.odd:hover td {
+	background-color: #EEDAEC;
+}
+
+#datatable_data tr.even:hover td {
+	background-color: #EEDAEC;
+}
+
+/* Bootstratp description lists (dt and dl) */
+.dl-horizontal dt, .dl-horizontal dd {
+	line-height: 2.428571;
+}
+
+/* Buttons from FORM */
+div.buttons {
+	
+	margin-top: 35px !important;
+	margin-bottom: 25px !important;
+	
+}
+
+div.gallery a img {
+	
+	margin-top: 10px;
+	
+}
+
+span.required{
+    color: #a94442;
+    font-weight: bold;
+}

@@ -1,0 +1,346 @@
+{% extends "_layouts/admin.html" %}
+{% load staticfiles %}
+
+{% block head %}
+
+    {{ block.super }}
+		
+	<script type="text/javascript">
+
+		/**
+		 * Jquery On Load
+		 *
+		 */
+		$(document).ready(function() {
+			
+			// funcoes de onload definidos pelo controller
+			{{ on_load|default:'' }}
+			
+		});
+
+		
+	</script>
+	
+{% endblock head %}
+
+	
+
+{% block content %}
+
+
+            <div class="row">
+            
+                <div class="col-lg-12">
+                    <h1 class="page-header">View User Details</h1>
+                </div>
+                
+            </div>
+            
+            {% include "admin/_common/status.html" %}
+            
+            <div class="row">
+                <div class="col-lg-12">
+
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            User ID# {{ user.id }}
+                        </div>
+                                                
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                
+                                	<dl class="dl-horizontal">
+		                                
+		                                <dt>Name:</dt>
+		                                <dd>{{ user.name }}</dd>
+		                                
+		                                <dt>E-mail:</dt>
+		                                <dd>{{ user.email }}</dd>
+
+                                        <dt>Is Active?</dt>
+		                                <dd>{% if user.is_active %} Yes {% else %} No {% endif %}</dd>
+		                                
+		                            </dl>
+
+                                    <div class="text-center buttons">
+		                            	<a href="{% url 'admin:core:users' %}" class="btn btn-default"><i class="fa fa-arrow-left"></i>Go Back</a>
+		                                <a href="{% url 'admin:core:user_edit' user.id %}" class="btn btn-default"><i class="fa fa-edit"></i>Edit Data</a>
+		                                <a href="{% url 'admin:core:login_as_user' user.id %}" class="btn btn-default"><i class="fa fa-user-secret"></i>Login as User</a>
+		                                <a href="#" onclick="confirm_delete( '{% url 'admin:core:user_delete' user.id %}' )" class="btn btn-danger"><i class="fa fa-trash-o"></i>Delete</a>
+									</div>
+                                    
+                                </div>
+
+                            </div>
+                            
+                        </div>
+                   
+                    </div>
+
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            Profile Completeness
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+
+                                	<div class="table-responsive">
+                                        <table class="table table-striped table-bordered table-hover">
+
+                                            <thead>
+                                                <tr>
+                                                    <th>Personal</th>
+                                                    <th>Language</th>
+                                                    <th>Education</th>
+                                                    <th>Work</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+
+                                                {% for stats in user_stats.all %}
+                                                    <tr>
+                                                        <td>{{ stats.percentage_personal }}%</td>
+                                                        <td>{{ stats.percentage_language }}%</td>
+                                                        <td>{{ stats.percentage_education }}%</td>
+                                                        <td>{{ stats.percentage_work }}%</td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            Points per Country
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+
+                                	<div class="table-responsive">
+                                        <table class="table table-striped table-bordered table-hover">
+
+                                            <thead>
+                                                <tr>
+                                                    <th>Country</th>
+                                                    <th>Personal</th>
+                                                    <th>Language</th>
+                                                    <th>Education</th>
+                                                    <th>Work</th>
+                                                    <th><strong>Total</strong></th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+
+                                                {% for result in user_result.all %}
+                                                    <tr>
+                                                        <td>{{ result.country.name }}</td>
+                                                        <td>{{ result.score_personal }}</td>
+                                                        <td>{{ result.score_language }}</td>
+                                                        <td>{{ result.score_education }}</td>
+                                                        <td>{{ result.score_work }}</td>
+                                                        <td><strong>{{ result.score_total }}</strong></td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            Personal Information
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+
+                                	<dl class="dl-horizontal">
+
+		                                <dt>Birth Date:</dt>
+		                                <dd>{{ user.userpersonal.birth_date|default:'--' }}</dd>
+
+		                                <dt>Gender:</dt>
+		                                <dd>{{ user.userpersonal.gender|default:'--' }}</dd>
+
+                                        <dt>Country of Citizenship:</dt>
+		                                <dd>{{ user.userpersonal.country.name|default:'--' }}</dd>
+
+                                        <dt>Family Overseas:</dt>
+		                                <dd>{{ user.userpersonal.family_overseas|default:'--' }}</dd>
+
+                                        <dt>Willing to live in regional australia:</dt>
+		                                <dd>{{ user.userpersonal.australian_regional_immigration|default:'--' }}</dd>
+
+		                            </dl>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            Language Information
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+
+                                	<dl class="dl-horizontal">
+
+                                        {% for user_language in user.userlanguageproficiency_set.all %}
+                                            <dt>{{ user_language.language.name }}:</dt>
+                                            <dd>{{ user_language.language_level_answer.description }}</dd>
+                                        {% endfor %}
+
+		                                <dt>Partner English:</dt>
+		                                <dd>{{ user.userlanguage.partner_english_level_answer.description|default:'--' }}</dd>
+
+                                        <dt>Partner French:</dt>
+		                                <dd>{{ user.userlanguage.partner_french_level_answer.description|default:'--' }}</dd>
+
+		                            </dl>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            Education Information
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+
+                                	<dl class="dl-horizontal">
+
+                                        <dt>Education History:</dt>
+		                                <dd>&nbsp;</dd>
+
+                                        {% for user_education in user.usereducationhistory_set.all %}
+                                            <dt>--></dt>
+                                            <dd>{{ user_education.school }} - {{ user_education.education_level_answer.description }} - {{ user_education.country.name }} </dd>
+                                        {% endfor %}
+
+		                                <dt>Partner Degree:</dt>
+		                                <dd>{{ user.usereducation.partner_education_level_answer.description|default:'--' }}</dd>
+
+                                        <dt>Studied Regional AU:</dt>
+		                                <dd>{{ user.usereducation.regional_australia_study|default:'--' }}</dd>
+
+		                            </dl>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            Work Information
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+
+                                	<dl class="dl-horizontal">
+
+                                        <dt>Occupation:</dt>
+		                                <dd>{{ user.userwork.occupation.name|default:'--' }}</dd>
+
+                                        <dt>Work Experience:</dt>
+		                                <dd>&nbsp;</dd>
+
+                                        {% for user_work in user.userworkexperience_set.all %}
+                                            <dt>--></dt>
+                                            <dd>{{ user_work.company }} - {{ user_work.country.name }} - {{ user_work.months }} month(s)</dd>
+                                        {% endfor %}
+
+		                                <dt>Invest Money:</dt>
+		                                <dd>{{ user.userwork.willing_to_invest|default:'--' }}</dd>
+
+                                        <dt>Startup Letter CA:</dt>
+		                                <dd>{{ user.userwork.canadian_startup_letter|default:'--' }}</dd>
+
+                                        <dt>Prof. Year AU:</dt>
+		                                <dd>{{ user.userwork.australian_professional_year|default:'--' }}</dd>
+
+                                        <dt>Work Offer:</dt>
+		                                <dd>{{ user.userwork.work_offer|default:'--' }}</dd>
+
+                                        <dt>Partner Study/Work CA:</dt>
+		                                <dd>{{ user.userwork.canadian_partner_work_study_experience|default:'--' }}</dd>
+
+                                        <dt>Partner Skills:</dt>
+		                                <dd>{{ user.userwork.partner_skills|default:'--' }}</dd>
+
+		                            </dl>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    
+                </div>
+            
+            </div>
+
+{% endblock content %}
+
+
+
+
+
+
+

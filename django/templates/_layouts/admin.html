@@ -1,0 +1,152 @@
+{% load staticfiles %}
+<!doctype html>
+<html>
+
+	{% block head %}
+        <head>
+
+            <!-- Meta -->
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <meta name="Title" content="VRON - ADMIN" />
+            <title>VRON - ADMIN</title>
+            <meta name="Robots" content="noindex, nofollow" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+            <!-- CSS -->
+            <link rel="shortcut icon" href="{% static 'admin/img/favicon.ico' %}" type="image/x-icon" />
+            <link href="{% static 'common/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+            <link href="{% static 'common/font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+            <link href="{% static 'admin/css/sb-admin.css' %}" rel="stylesheet">
+            <link href="{% static 'admin/css/style.css' %}" rel="stylesheet">
+
+            <!-- JAVASCRIPT -->
+            <script src="{% static 'common/jquery/js/jquery.js' %}"></script>
+            <script src="{% static 'common/bootstrap/js/bootstrap.js' %}"></script>
+            <script src="{% static 'common/metis-menu/js/jquery.metisMenu.js' %}"></script>
+            <script src="{% static 'admin/js/sb-admin.js' %}"></script>
+            <script src="{% static 'admin/js/util.js' %}"></script>
+
+        </head>
+    {% endblock head %}
+    
+<body>
+
+    <div id="wrapper">
+
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
+            
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{%  url 'admin:home' %}"><img src="{% static 'admin/img/logo_admin.png' %}" title="VRON" /></a>
+            </div>
+            <!-- /.navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+                
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="{% url 'admin:my_account' %}"><i class="fa fa-user fa-fw"></i> My Account</a>
+                        </li>
+                        <!-- <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li> -->
+                        <li class="divider"></li>
+                        <li><a href="{% url 'admin:logout' %}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+            <!-- /.navbar-top-links -->
+
+            <div class="navbar-default navbar-static-side" role="navigation">
+                <div class="sidebar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Search...">
+                                <span class="input-group-btn">
+                                <button class="btn btn-default" type="button">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            </div>
+                            <!-- /input-group -->
+                        </li>
+
+                        <li>
+                            <a href="#"><i class="fa fa-cog fa-fw"></i> Core<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                {% if perms.core.admin_view_user %}
+                                    <li>
+                                        <a href="{% url 'admin:core:users' %}">Users<span class="fa"></span></a>
+                                    </li>
+                                {% endif %}
+                                {% if perms.core.admin_view_admin_user %}
+                                    <li>
+                                        <a href="{% url 'admin:core:admin_users' %}">Admin Users</a>
+                                    </li>
+                                {% endif %}
+                                {% if perms.auth.add_group or perms.auth.change_group or perms.auth.delete_group  %}
+                                    <li>
+                                        <a href="{% url 'admin:core:groups' %}">Groups and Permissions</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a href="#"><i class="fa fa-question-circle fa-fw"></i> API Requests<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="{% url 'admin:connector:list_availability_requests' %}">Availability</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'admin:connector:list_booking_requests' %}">Booking</a>
+                                </li>
+                            </ul>
+                        </li>
+
+
+                        <li>
+                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Reports<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="#">API Statistics</a>
+                                </li>
+                                <li>
+                                    <a href="#">Availability vs Booking</a>
+                                </li>
+
+                            </ul>
+                        </li>
+                       
+                    </ul>
+                    <!-- /#side-menu -->
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+        
+        <div id="page-wrapper">
+        
+            {% block content %}{% endblock content %}
+        
+        </div>
+        
+    </div>
+
+</body>
+</html>
+    
+    
