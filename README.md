@@ -98,5 +98,14 @@ A little connector between 2 APIs: Viator &amp; RON.
     ```
 
 
+## Copying the SSL Certificated
+Download the SSL certificates and dump them under `/etc/apache2/ssl`
+
+For test purposes, you can use
+```
+wget http://www.intertech.com.br/vron/ssl.zip
+```
+
+
 ## Testing
 To make sure it works open up [http://localhost:8080/]
