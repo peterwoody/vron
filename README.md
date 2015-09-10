@@ -98,7 +98,7 @@ A little connector between 2 APIs: Viator &amp; RON.
     ```
 
 
-## Copying the SSL Certificated
+## Copying the SSL Certificates
 Download the SSL certificates and dump them under `/etc/apache2/ssl`
 
 For test purposes, you can use
