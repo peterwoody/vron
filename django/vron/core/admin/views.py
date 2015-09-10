@@ -9,15 +9,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
-from wannamigrate.admin.forms import (
+from vron.admin.forms import (
     AdminUserForm, GroupForm, UserForm
 )
-from wannamigrate.core.models import UserStats
-from wannamigrate.points.models import UserResult
-from wannamigrate.core.util import build_datatable_json
-from wannamigrate.core.mailer import Mailer
-from wannamigrate.core.decorators import restrict_internal_ips
-from wannamigrate.admin.views import admin_check
+from vron.core.util import build_datatable_json
+from vron.core.mailer import Mailer
+from vron.core.decorators import restrict_internal_ips
+from vron.admin.views import admin_check
 
 
 

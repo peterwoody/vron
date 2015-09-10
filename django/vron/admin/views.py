@@ -14,10 +14,10 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from wannamigrate.admin.forms import (
+from vron.admin.forms import (
     LoginForm, MyAccountForm
 )
-from wannamigrate.core.decorators import restrict_internal_ips
+from vron.core.decorators import restrict_internal_ips
 
 
 

@@ -51,7 +51,17 @@ A little connector between 2 APIs: Viator &amp; RON.
     ```
     Vagrant is configured to use the ports 2222, 8080, 8181 and 4443, so make sure they are free to be used.
 
-3. Run the following command to configure your environment (Make sure you still in the 'infra' folder).
+3. If you see an error message that starts with 'Failed to mount folders in Linux guest' run the following commands:
+    ```
+    vagrant ssh
+    sudo groupadd vron-dev
+    sudo usermod -a -G vron-dev vagrant
+    sudo usermod -a -G vron-dev www-data
+    exit
+    vagrant reload
+    ```
+
+4. Run the following command to configure your environment (Make sure you still in the 'infra' folder).
     `python helper.py config site on local with database`
 
     The helper.py script will install all needed packages on your local enviroment, such as apache, git and also a local mysql database. It will ask to you the root's password for the database (Choose one that is good to you. We will use "88uhGLua19UOSAmav" for examplification).

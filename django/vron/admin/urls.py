@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.7/topics/http/urls/
 # Imports
 ##########################
 from django.conf.urls import patterns, url, include
-from wannamigrate.admin import views
+from vron.admin import views
 
 
 
@@ -27,6 +27,6 @@ urlpatterns = patterns('',
     url( r'^edit_my_account/$', views.login_edit_my_account, name='edit_my_account' ),
 
     # CORE APP urls
-    url( r'^core/', include( 'wannamigrate.core.admin.urls', namespace = "core" ) ),
+    url( r'^core/', include( 'vron.core.admin.urls', namespace = "core" ) ),
 
 )

@@ -20,10 +20,22 @@ SERVERS = {
         "BRANCH" : "master",            # Vagrant server doesn't require git
     },
 
-    "prod" : {
-        "IP" : "<IP here>",             # The IP address of the server.
-        "DOMAIN" : "vron.com",          # Server's domain name.
+    "dev" : {
+        "IP" : "ip-here",               # The IP address of the server.
+        "DOMAIN" : "dev.vron.com.au",   # Server's domain name.
         "KEYPAIR" : "key.pem",          # The keypair file used to connect to the server.
+        "DEFAULT_USER" : "ubuntu",      # The default user and user group of the server.
+        "HTTP_PORT" : 80,               # The HTTP port on the server.
+        "HTTPS_PORT" : 443,             # The HTTPS port on the server.
+        "HTTP_FORWARDED_PORT" : 80,     # The HTTP forwarded port
+        "HTTPS_FORWARDED_PORT" : 443,   # The HTTPS forwarded port
+        "BRANCH" : "dev",               # Vagrant server doesn't require git
+    },
+
+    "prod" : {
+        "IP" : "ip-here",               # The IP address of the server.
+        "DOMAIN" : "vron.com.au",       # Server's domain name.
+        "KEYPAIR" : "key-here.pem",     # The keypair file used to connect to the server.
         "DEFAULT_USER" : "ubuntu",      # The default user and user group of the server.
         "HTTP_PORT" : 80,               # The HTTP port on the server.
         "HTTPS_PORT" : 443,             # The HTTPS port on the server.
@@ -32,6 +44,17 @@ SERVERS = {
         "BRANCH" : "master",            # Vagrant server doesn't require git
     },
 
+    "wiki" : {
+        "IP" : "ip-here",               # The IP address of the server.
+        "DOMAIN" : "vron.com.au",       # Server's domain name.
+        "KEYPAIR" : "key-here.pem",     # The keypair file used to connect to the server.
+        "DEFAULT_USER" : "ubuntu",      # The default user and user group of the server.
+        "HTTP_PORT" : 80,               # The HTTP port on the server.
+        "HTTPS_PORT" : 443,             # The HTTPS port on the server.
+        "HTTP_FORWARDED_PORT" : 80,     # The HTTP forwarded port
+        "HTTPS_FORWARDED_PORT" : 443,   # The HTTPS forwarded port
+        "BRANCH" : "",                  # Vagrant/Wiki server doesn't require git
+    },
 }
 
 # Global settings
@@ -43,9 +66,15 @@ APP_NAME = "vron"                                       # Current project main a
 
 # Packages to be installed for django applications
 DJANGO_PACKAGES = [
-    "python3-dev", "git", "apache2", "apache2-dev",
+    "python3-dev", "git", "apache2", "libapache2-mod-wsgi-py3",
     "libmysqlclient-dev", "mysql-client", "gettext", "libjpeg-dev", "rabbitmq-server",
     "supervisor",
+]
+
+# Packages to be installed for wiki application
+WIKI_PACKAGES = [
+    "apache2", "libapache2-mod-php5", "php5-mysql",
+    "libmysqlclient-dev", "mysql-client"
 ]
 
 # Virtualenv packages
@@ -62,8 +91,7 @@ VIRTUALENV_PACKAGES = [
     "requests==2.7.0",
     "sqlparse==0.1.14",
     "celery==3.1.18",
-    "django-celery==3.1.16",
-    "mod-wsgi==4.4.13"
+    "django-celery==3.1.16"
 ]
 
 
@@ -85,9 +113,10 @@ PROJECT_ROOT = DEPLOYMENT_ROOT + '/' + PROJECT_ALIAS
 PROJECT_VIRTUALENV = VIRTUALENV_ROOT + '/' + PROJECT_ALIAS + "venv"
 DATABASE_BACKUP_FOLDER = '/database_backup'
 
-# Aliases for django and wsgi
+# Aliases for django, wiki and wsgi
 DJANGO_ALIAS = "django"
-WSGI_ALIAS = "wsgi_express"
+WIKI_ALIAS = "wiki"
+WSGI_ALIAS = "wsgi"
 
 # Apache's default user
 APACHE_DEFAULT_USER = "www-data"
@@ -95,13 +124,14 @@ APACHE_DEFAULT_USER = "www-data"
 # User group for the project
 DEFAULT_USER_GROUP = PROJECT_ALIAS + "-dev"
 
-# Root path for django
+# Root path for django and wiki
 DJANGO_ROOT = PROJECT_ROOT + '/' + DJANGO_ALIAS
+WIKI_ROOT = PROJECT_ROOT + '/' + WIKI_ALIAS
 
 # Apache configurations folder
 APACHE_SITES_ENABLED_PATH = "/etc/apache2/sites-enabled"    # Sites enabled folder on Apache
 APACHE_MODS_ENABLED_PATH = "/etc/apache2/mods-enabled"      # Mods enabled folder on Apache
-APACHE_MODS_AVAILABLE_PATH = "/etc/apache2/mods-available"  # Mods available folder on Apache
+APACHE_MODS_AVAILABLE_PATH = "/etc/apache2/mods-available"      # Mods available folder on Apache
 
 # Spacing for help messages.
 N_DEFAULT_HELP_SPACING = 15
@@ -109,20 +139,82 @@ N_DEFAULT_HELP_SPACING = 15
 
 
 WSGI_CONF = """
-    WSGIPythonHome {virtualenv}
+<IfModule mod_wsgi.c>
     WSGIPythonPath {django_root}:/{virtualenv}/lib/python3.4:/{virtualenv}/lib/python3.4/site-packages
+</IfModule>
 """.format( django_root = DJANGO_ROOT, virtualenv = PROJECT_VIRTUALENV )
 
+# Requires formatting on the fly. Params:
+# http_port, wiki_alias, domain, wiki_root.
+WIKI_CONF = """
+    <VirtualHost *:{http_port}>
+        ServerName {wiki_alias}.{domain}
+        DocumentRoot {wiki_root}
+        <Directory {wiki_root}>
+            Require all granted
+        </Directory>
+    </VirtualHost>
+"""
 
 # Requires formatting on the fly. Params:
 # http_port, https_port, www_domain, pt_domain, django_root, app_name, https_forwarded_port
 DJANGO_CONF = """
     <VirtualHost *:{http_port}>
         ServerName {www_domain}
+        Redirect permanent / https://{www_domain}:{https_forwarded_port}/
+    </VirtualHost>
+
+    <VirtualHost *:{http_port}>
+        ServerName {pt_domain}
+        Redirect permanent / https://{pt_domain}:{https_forwarded_port}/
+    </VirtualHost>
+
+    <VirtualHost _default_:{https_port}>
+        ServerName {www_domain}
         DocumentRoot {django_root}
+
+        SSLEngine on
+        SSLProtocol All -SSLv2 -SSLv3
+        SSLCertificateFile /etc/apache2/ssl/vron.crt
+        SSLCertificateKeyFile /etc/apache2/ssl/vron.key
+        SSLCertificateChainFile /etc/apache2/ssl/vron.ca
 
         WSGIScriptAlias / {django_root}/{app_name}/wsgi.py
 
+        Alias /favicon.ico {django_root}/static/favicon.ico
+        Alias /static/ {django_root}/static/
+        Alias /upload/ {django_root}/upload/
+
+        <Directory {django_root}/{app_name}/>
+                <Files wsgi.py>
+                    Require all granted
+                </Files>
+        </Directory>
+
+        <Directory {django_root}/static/>
+            Require all granted
+        </Directory>
+
+        <Directory {django_root}/upload/>
+            Require all granted
+        </Directory>
+
+    </VirtualHost>
+
+
+    <VirtualHost _default_:{https_port}>
+        ServerName {pt_domain}
+        DocumentRoot {django_root}
+
+        SSLEngine on
+        SSLProtocol All -SSLv2 -SSLv3
+        SSLCertificateFile /etc/apache2/ssl/pt.vron.com.crt
+        SSLCertificateKeyFile /etc/apache2/ssl/pt.vron.com.key
+        SSLCertificateChainFile /etc/apache2/ssl/pt.vron.com.ca
+
+        WSGIScriptAlias / {django_root}/{app_name}/wsgi.py
+
+        Alias /robots.txt {django_root}/static/robots.txt
         Alias /favicon.ico {django_root}/static/favicon.ico
         Alias /static/ {django_root}/static/
         Alias /upload/ {django_root}/upload/
@@ -219,6 +311,7 @@ def config( args ):
         # The number of the ports to display on the .conf files
         http_workaround_port = ""
         https_workaround_port = ""
+        wiki_workaround_port = ""
 
         # Connecting to the server
         if server == "local":
@@ -255,7 +348,7 @@ def config( args ):
         remote_commands.append( "echo \"##################################\"" )
         remote_commands.append( "echo \" \"" )
 
-        INSTALL_PACKAGES = DJANGO_PACKAGES
+        INSTALL_PACKAGES = DJANGO_PACKAGES if app == "site" else WIKI_PACKAGES
         for package in INSTALL_PACKAGES:
             remote_commands.append( "sudo apt-get install {0} --yes".format( package ) )
         remote_commands.append( "echo \"   ...DONE!\"" )
@@ -304,11 +397,53 @@ def config( args ):
         remote_commands.append( "echo \"   ...DONE!\"" )
 
 
+        ######################################
+        # Configuring Wiki on remote.
+        ######################################
+        if "wiki" in args:
+            remote_commands.append( "echo \" \"" )
+            remote_commands.append( "echo \"#########################\"" )
+            remote_commands.append( "echo \"# DOWNLOADING MEDIAWIKI #\"" )
+            remote_commands.append( "echo \"#########################\"" )
+            remote_commands.append( "echo \" \"" )
+            remote_commands.extend([
+                "cd {0}".format( PROJECT_ROOT ),
+                "wget http://releases.wikimedia.org/mediawiki/1.23/mediawiki-1.23.2.tar.gz",
+                "tar -zxf mediawiki-1.23.2.tar.gz",
+                "rm mediawiki-1.23.2.tar.gz",
+                "mv mediawiki-1.23.2 {0}".format( WIKI_ROOT ),
+                "sudo chown -R {0}:{1} {2}".format( SERVERS[ server ][ "DEFAULT_USER" ], DEFAULT_USER_GROUP, WIKI_ROOT ),
+                "sudo chgrp -R {0} {1}".format( DEFAULT_USER_GROUP, WIKI_ROOT ),
+            ])
+            remote_commands.append( "echo \"   ...DONE!\"" )
+
+            # Formats the conf file for the given server
+            wiki_conf = WIKI_CONF.format(
+                http_port = SERVERS[ server ][ "HTTP_PORT" ],
+                wiki_alias = WIKI_ALIAS,
+                domain = SERVERS[ server ][ "DOMAIN" ],
+                wiki_root = WIKI_ROOT
+            )
+
+            remote_commands.append( "echo \" \"" )
+            remote_commands.append( "echo \"#############################\"" )
+            remote_commands.append( "echo \"# GENERATING WIKI.CONF FILE #\"" )
+            remote_commands.append( "echo \"#############################\"" )
+            remote_commands.append( "echo \" \"" )
+            # Creates the conf file containing the virtualhosts for the wiki on apache sites-enabled folder.
+            remote_commands.extend([
+                "sudo touch {0}/{1}.conf".format( APACHE_SITES_ENABLED_PATH, WIKI_ALIAS ),
+                "sudo chmod 777 {0}/{1}.conf".format( APACHE_SITES_ENABLED_PATH, WIKI_ALIAS ),
+                "echo \"{0}\" > {1}/{2}.conf".format( wiki_conf, APACHE_SITES_ENABLED_PATH, WIKI_ALIAS ),
+                "sudo chmod 644 {0}/{1}.conf".format( APACHE_SITES_ENABLED_PATH, WIKI_ALIAS ),
+            ])
+            remote_commands.append( "echo \"   ...DONE!\"" )
+
 
         ################################
         # Configuring Django on remote.
         ################################
-        if "site" in args:
+        elif "site" in args:
             remote_commands.append( "echo \" \"" )
             remote_commands.append( "echo \"#################################\"" )
             remote_commands.append( "echo \"# CREATING DIRECTORY STRUCTURE  #\"" )
@@ -381,19 +516,12 @@ def config( args ):
             remote_commands.append( "echo \"#########################\"" )
             remote_commands.append( "echo \" \"" )
 
-            # Generates wsgi_express.load and wsgi_express.conf
-            # a2enmod wsgi_express is activated later on the script
+            # Generates wsgi.conf
             remote_commands.extend([
-                # wsgi load file
-                "sudo touch {0}/{1}.load".format( APACHE_MODS_AVAILABLE_PATH, WSGI_ALIAS ),
-                "sudo chmod 777 {0}/{1}.load".format( APACHE_MODS_AVAILABLE_PATH, WSGI_ALIAS ),
-                "sudo {0}/bin/mod_wsgi-express install-module | sed -n 1p > {1}/{2}.load".format( PROJECT_VIRTUALENV, APACHE_MODS_AVAILABLE_PATH, WSGI_ALIAS ),
-                "sudo chmod 644 {0}/{1}.load".format( APACHE_MODS_AVAILABLE_PATH, WSGI_ALIAS ),
-                # wsgi conf file
-                "sudo touch {0}/{1}.conf".format( APACHE_MODS_AVAILABLE_PATH, WSGI_ALIAS ),
-                "sudo chmod 777 {0}/{1}.conf".format( APACHE_MODS_AVAILABLE_PATH, WSGI_ALIAS ),
-                "echo \"{0}\" > {1}/{2}.conf".format( WSGI_CONF, APACHE_MODS_AVAILABLE_PATH, WSGI_ALIAS ),
-                "sudo chmod 644 {0}/{1}.conf".format( APACHE_MODS_AVAILABLE_PATH, WSGI_ALIAS ),
+                "sudo touch {0}/{1}.conf".format( APACHE_MODS_ENABLED_PATH, WSGI_ALIAS ),
+                "sudo chmod 777 {0}/{1}.conf".format( APACHE_MODS_ENABLED_PATH, WSGI_ALIAS ),
+                "echo \"{0}\" > {1}/{2}.conf".format( WSGI_CONF, APACHE_MODS_ENABLED_PATH, WSGI_ALIAS ),
+                "sudo chmod 644 {0}/{1}.conf".format( APACHE_MODS_ENABLED_PATH, WSGI_ALIAS ),
             ])
 
             # Formats the conf file for the given server
@@ -435,9 +563,6 @@ def config( args ):
             remote_commands.append( "echo \" \"" )
             # Enabling SSL on apache
             remote_commands.append( "sudo a2enmod ssl" )
-            # Enabling WSGI express
-            remote_commands.append( "sudo a2enmod {0}".format( WSGI_ALIAS ) )
-            remote_commands.append( "echo \"   ...DONE!\"" )
 
 
         # Enabling mode rewrite on apache
@@ -482,6 +607,10 @@ def config( args ):
         if app == "site":
             print( "6. Exit MySQL and SSH and run \"update\" to populate the database." )
             print( "     python helper.py update <server>" )
+        elif app == "wiki":
+            print( "6. Access http://{0}:{1}/mw-config/index.php to configure the wiki.".format( SERVERS[ server ][ "IP" ], SERVERS[ server ][ "HTTP_PORT" ] ) )
+
+
 
 def connect( args ):
     """
@@ -719,7 +848,7 @@ def h():
     METHODS_HELP = [
         {
             "name": config.__name__,
-            "description": "Configures a site on the remote server."
+            "description": "Configures a site or wiki on the remote server."
         },
 
         {

@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.7/topics/http/urls/
 # Imports
 ##########################
 from django.conf.urls import patterns, url
-from wannamigrate.core.admin import views
+from vron.core.admin import views
 
 
 

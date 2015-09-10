@@ -25,6 +25,6 @@ class CoreConfig( AppConfig ):
     verbose_name = 'Core'
  
     def ready( self ):
- 
+        pass
         # import signal handlers
-        import vron.core.signals
+        #import vron.core.signals

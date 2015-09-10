@@ -1,1 +1,1 @@
-default_app_config = 'wannamigrate.core.apps.CoreConfig'
+default_app_config = 'vron.core.apps.CoreConfig'

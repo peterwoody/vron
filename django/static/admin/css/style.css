@@ -6,18 +6,26 @@
 
 /* Background and button for Login */
 body.login {
-    background-color: #643384;
-    background-image: url('../img/background.jpg');
-    background-size: 100% auto;
-    background-repet: no-repeat;
+    background-color: #ddd;
 }
 .btn-login {
     color: #fff;
-    background-color: #4B2C5F;
-    border-color: #4B2C5F;
+    background-color: #42AAD0;
+    border-color: #0D252E;
 }
 .btn-login:hover, .btn-login:active {
     color: #D5CFCF;
+}
+body.login .panel-default>.panel-heading {
+    color: #FDF8F8;
+    background-color: #008ABC;
+    border-color: #ddd;
+}
+body.login .panel-default {
+    border-color: #A9A8A8;
+}
+body.login .login-panel{
+    margin-top: 20%;
 }
 
 /* Link Colors on ADMIN */
