@@ -1,0 +1,18 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # Virtual Machine Box
+  config.vm.box = "ubuntu/trusty32"
+
+  config.vm.synced_folder "../", "/vron",
+    owner: "vagrant", group: "vron-dev"
+
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 81, host: 8181
+  config.vm.network "forwarded_port", guest: 443, host: 4443
+
+end
