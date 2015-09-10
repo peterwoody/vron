@@ -3,7 +3,6 @@ dea/*
 */.idea/*
 infra/.vagrant
 wiki/*
-django/wannamigrate/_settings/custom.py
 django/upload/*
 django/celerybeat-schedule
 django/~/
