@@ -1,6 +1,14 @@
 # vron
 A little connector between 2 APIs: Viator &amp; RON.
 
+Main features:
+
+- Allows Respax tours to be available for Viator
+- Logs every request with error handling (It makes 5 new attempts)
+- Email notifications when sensitive errors occurs
+- Responsive Admin Area with API settings and log of requests received and made
+
+
 ### Technologies and Tools Used
 
 #### Back-End
