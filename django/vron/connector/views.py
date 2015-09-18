@@ -25,7 +25,7 @@ from vron.connector.api.batch_availability import BatchAvailability
 @csrf_exempt
 def api( request ):
     """
-    Creates a new booking
+    Receives and handles a request from VIATOR
 
     :param: request
     :return: String
