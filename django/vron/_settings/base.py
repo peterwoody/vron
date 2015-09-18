@@ -41,19 +41,6 @@ LOGIN_URL = 'admin:login'
 
 
 
-#########################################
-# SSL
-#########################################
-# secure proxy SSL header and secure cookies
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-os.environ['wsgi.url_scheme'] = 'https'
-
-
-
-
 
 #########################################
 # INTERNATIONALIZATION AND LOCALIZATION
@@ -164,6 +151,7 @@ THIRD_PARTY_APPS = (
 LOCAL_APPS = (
     'vron.core',
     'vron.admin',
+    'vron.connector',
 )
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -176,25 +164,22 @@ INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # Celery settings
 #######################################
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-CELERYBEAT_SCHEDULE = {
-    'clear-sessions-every-day': {
-        'task': 'vron.core.tasks.clear_sessions',
-        'schedule': crontab(minute=0,hour=3),
-        #'args': (16, 16),
-    },
-    'database-backup-every-sunday': {
-        'task': 'vron.core.tasks.database_backup',
-        'schedule': crontab(minute=0,hour=3,day_of_week='sunday'),
-        #'args': (16, 16),
-    },
-    'fix-counters-every-monday': {
-        'task': 'vron.core.tasks.fix_counters',
-        'schedule': crontab(minute=0,hour=3,day_of_week='monday'),
-        #'args': (16, 16),
-    },
-    'clear-notifications-every-monday': {
-        'task': 'vron.core.tasks.clear_notifications',
-        'schedule': crontab(minute=0,hour=1,day_of_week='monday'),
-        #'args': (16, 16),
-    },
-}
+CELERYBEAT_SCHEDULE = {}
+
+
+
+
+
+########################################
+# Database Mapping Settings
+########################################
+ID_CONFIG_API_KEY = 1
+ID_CONFIG_RON_USERNAME = 2
+ID_CONFIG_RON_PASSWORD = 3
+ID_CONFIG_MAX_FAILED_ATTEMPTS = 4
+ID_CONFIG_ERROR_EMAIL = 5
+
+ID_LOG_STATUS_RECEIVED = 1
+ID_LOG_STATUS_COMPLETE = 2
+ID_LOG_STATUS_ERROR_VIATOR = 3
+ID_LOG_STATUS_ERROR_RON = 4

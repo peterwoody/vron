@@ -84,11 +84,11 @@
                         </li>
 
                         <li>
-                            <a href="#"><i class="fa fa-cog fa-fw"></i> Core<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-cog fa-fw"></i> Config<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
-                                {% if perms.core.admin_view_user %}
+                                {% if perms.connector.admin_view_config %}
                                     <li>
-                                        <a href="{% url 'admin:core:users' %}">Users<span class="fa"></span></a>
+                                        <a href="{% url 'admin:connector:config' %}">VRON Settings</a>
                                     </li>
                                 {% endif %}
                                 {% if perms.core.admin_view_admin_user %}
@@ -108,10 +108,10 @@
                             <a href="#"><i class="fa fa-cloud fa-fw"></i> API Requests<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="{% url 'admin:connector:list_availability_requests' %}">Availability</a>
+                                    <a href="#">Availability</a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'admin:connector:list_booking_requests' %}">Booking</a>
+                                    <a href="#">Booking</a>
                                 </li>
                             </ul>
                         </li>

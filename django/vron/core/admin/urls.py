@@ -20,15 +20,6 @@ from vron.core.admin import views
 ##########################
 urlpatterns = patterns('',
 
-    # Users
-    url( r'^users/$', views.user_list, name='users' ),
-    url( r'^users/json/$', views.user_list_json, name='user_json' ),
-    url( r'^users/add/$', views.user_add, name='user_add' ),
-    url( r'^users/details/(?P<user_id>\d+)$', views.user_details, name='user_details' ),
-    url( r'^users/login_as_user/(?P<user_id>\d+)$', views.login_as_user, name='login_as_user' ),
-    url( r'^users/edit/(?P<user_id>\d+)$', views.user_edit, name='user_edit' ),
-    url( r'^users/delete/(?P<user_id>\d+)$', views.user_delete, name='user_delete' ),
-
     # Admin Users
     url( r'^admin_users/$', views.admin_user_list, name='admin_users' ),
     url( r'^admin_users/json/$', views.admin_user_list_json, name='admin_user_json' ),

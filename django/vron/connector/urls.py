@@ -18,8 +18,7 @@ from vron.connector import views
 ##########################
 urlpatterns = patterns('',
 
-    # Availability
-    url( r'^$', views.check_availability, name = 'check_availability' ),
-
+    # API
+    url( r'^api/$', views.api, name = 'api' ),
 
 )

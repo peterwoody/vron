@@ -1,35 +1,35 @@
 # vron
 A little connector between 2 APIs: Viator &amp; RON.
 
-## Technologies and Tools Used
+### Technologies and Tools Used
 
-### Back-End
+#### Back-End
 - Python >= 3.4
 - Django >= 1.7
 - MySQL >= 5.4
 
-### Front-End
+#### Front-End
 - HTML
 - CSS
 - Javascript
 
-### IDE of preference
+#### IDE of preference
 - PyCharm
 - Sublime
 
-### Server Side
+#### Server Side
 - Ubuntu 14.0.4
 - Vagrant
 - Virtual Box
 - GIT
 - Celery
 
-### APIs
+#### APIs
 - [RON Api](http://wiki.respax.com.au/respax/ron_api)
 - [Viator API](http://supplierapitestharness.viatorinc.com/documentation.php)
 
 
-## Installing required software
+### Installing required software
 
 1. Install Vagrant (Go to: http://www.vagrantup.com/downloads.html)
 2. Install Virtual Box (Go to: https://www.virtualbox.org/wiki/Downloads)
@@ -37,7 +37,7 @@ A little connector between 2 APIs: Viator &amp; RON.
 4. Install Python 3.4 (Go to: https://www.python.org/)
 
 
-## Cloning the code
+### Cloning the code
 
 1. Clone the GIT Repository using the following command:
     `git clone https://github.com/humbertomn/vron.git ~/vron`
@@ -66,10 +66,8 @@ A little connector between 2 APIs: Viator &amp; RON.
 
     The helper.py script will install all needed packages on your local enviroment, such as apache, git and also a local mysql database. It will ask to you the root's password for the database (Choose one that is good to you. We will use "88uhGLua19UOSAmav" for examplification).
 
-    PS: It's ok to see an error message from apache (it would not be able to restart properly because it doesn't found the SSL files, It's ok, keep following the steps).
 
-
-## Installing the database
+### Installing the database
 1. Connect to the virtual machine via SSH:
     `python helper.py connect local` or `vagrant ssh`
 
@@ -98,14 +96,5 @@ A little connector between 2 APIs: Viator &amp; RON.
     ```
 
 
-## Copying the SSL Certificates
-Download the SSL certificates and dump them under `/etc/apache2/ssl`
-
-For test purposes, you can use
-```
-wget http://www.intertech.com.br/vron/ssl.zip
-```
-
-
-## Testing
+### Testing
 To make sure it works open up [http://localhost:8080/]

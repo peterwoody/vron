@@ -17,8 +17,8 @@ from vron._settings.base import *
 #########################################
 # URLs
 #########################################
-BASE_URL = 'https://localhost:4443/'
-BASE_URL_SECURE = 'https://localhost:4443/'
+BASE_URL = 'http://localhost:8080/'
+BASE_URL_SECURE = 'http://localhost:8080/'
 
 
 

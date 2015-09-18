@@ -20,7 +20,7 @@ import os
 ##########################
 
 #SSL
-os.environ[ 'HTTPS' ] = "on"
+os.environ[ 'HTTPS' ] = "off"
 
 # Set the correct settings file to django
 os.environ.setdefault( "DJANGO_SETTINGS_MODULE", 'vron._settings.custom' )

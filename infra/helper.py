@@ -68,7 +68,7 @@ APP_NAME = "vron"                                       # Current project main a
 DJANGO_PACKAGES = [
     "python3-dev", "git", "apache2", "libapache2-mod-wsgi-py3",
     "libmysqlclient-dev", "mysql-client", "gettext", "libjpeg-dev", "rabbitmq-server",
-    "supervisor",
+    "supervisor", "python3-lxml",
 ]
 
 # Packages to be installed for wiki application
@@ -161,16 +161,6 @@ WIKI_CONF = """
 DJANGO_CONF = """
     <VirtualHost *:{http_port}>
         ServerName {www_domain}
-        Redirect permanent / https://{www_domain}:{https_forwarded_port}/
-    </VirtualHost>
-
-    <VirtualHost *:{http_port}>
-        ServerName {pt_domain}
-        Redirect permanent / https://{pt_domain}:{https_forwarded_port}/
-    </VirtualHost>
-
-    <VirtualHost _default_:{https_port}>
-        ServerName {www_domain}
         DocumentRoot {django_root}
 
         SSLEngine on
@@ -181,40 +171,6 @@ DJANGO_CONF = """
 
         WSGIScriptAlias / {django_root}/{app_name}/wsgi.py
 
-        Alias /favicon.ico {django_root}/static/favicon.ico
-        Alias /static/ {django_root}/static/
-        Alias /upload/ {django_root}/upload/
-
-        <Directory {django_root}/{app_name}/>
-                <Files wsgi.py>
-                    Require all granted
-                </Files>
-        </Directory>
-
-        <Directory {django_root}/static/>
-            Require all granted
-        </Directory>
-
-        <Directory {django_root}/upload/>
-            Require all granted
-        </Directory>
-
-    </VirtualHost>
-
-
-    <VirtualHost _default_:{https_port}>
-        ServerName {pt_domain}
-        DocumentRoot {django_root}
-
-        SSLEngine on
-        SSLProtocol All -SSLv2 -SSLv3
-        SSLCertificateFile /etc/apache2/ssl/pt.vron.com.crt
-        SSLCertificateKeyFile /etc/apache2/ssl/pt.vron.com.key
-        SSLCertificateChainFile /etc/apache2/ssl/pt.vron.com.ca
-
-        WSGIScriptAlias / {django_root}/{app_name}/wsgi.py
-
-        Alias /robots.txt {django_root}/static/robots.txt
         Alias /favicon.ico {django_root}/static/favicon.ico
         Alias /static/ {django_root}/static/
         Alias /upload/ {django_root}/upload/
