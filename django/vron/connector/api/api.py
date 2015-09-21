@@ -42,7 +42,7 @@ class Api( object ):
         # Saves class attributes
         self.root_element = self.__prepare_root_element( root_element )
         self.config_info = config
-        self.request_status = { 'Status': '', 'Error': '', 'ErrorCode': '', 'ErrorMessage': '', 'ErrorDetails': '' }
+        self.request_status = { 'status': '', 'error': '', 'error_code': '', 'error_message': '', 'error_details': '' }
         self.host_id = None
         self.reseller_id = None
         self.external_reference = None
@@ -105,9 +105,9 @@ class Api( object ):
                     return True
                 error_message = 'Invalid api key'
 
-        self.request_status['Status'] = 'ERROR'
-        self.request_status['Error'] = 'ApiKey'
-        self.request_status['ErrorCode'] = error_message if error_message else 'ApiKey missing'
+        self.request_status['status'] = 'error'
+        self.request_status['error'] = 'ApiKey'
+        self.request_status['error_code'] = error_message if error_message else 'ApiKey missing'
         return False
 
     def log_request( self, log_status_id, error_message = None ):
@@ -147,9 +147,9 @@ class Api( object ):
         # Gets ResellerId element
         self.reseller_id = self.get_element_text( "ResellerId" )
         if self.reseller_id is None:
-            self.request_status['Status'] = 'ERROR'
-            self.request_status['Error'] = 'ResellerId'
-            self.request_status['ErrorCode'] = "ResellerId missing"
+            self.request_status['status'] = 'error'
+            self.request_status['error'] = 'ResellerId'
+            self.request_status['error_code'] = "ResellerId missing"
             return False
 
         # Calls login method
@@ -161,7 +161,27 @@ class Api( object ):
             )
             return self.ron_session_id
         except xmlrpc.client.Fault as error:
-            self.request_status['Status'] = 'ERROR'
-            self.request_status['Error'] = 'ResellerId'
-            self.request_status['ErrorCode'] = 'Invalid Login for RON'
+            self.request_status['status'] = 'error'
+            self.request_status['error'] = 'ResellerId'
+            self.request_status['error_code'] = 'Invalid Login for RON'
+            self.request_status['error_details'] = error.faultString
+            return False
+
+    def ron_write_reservation( self, host_id, reservation ):
+        """
+        Returns a dictionary containing a single associative array of
+        extended information for the host including contact information.
+        :param: Int host_id
+        :param: Dictionary reservation
+        :return: Mixed
+        """
+
+        # Creates ron XML-RPC server connection
+        ron = self.ron_connect()
+
+        # Calls ron method
+        try:
+            result = ron.writeReservation( self.host_id, -1, reservation, { 'strPaymentOption': 'full-agent' } )
+            return result
+        except xmlrpc.client.Fault as error:
             return False

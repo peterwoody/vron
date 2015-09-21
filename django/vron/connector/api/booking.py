@@ -33,7 +33,7 @@ class Booking( Api ):
         """
 
         # Declares additional class attributes
-        self.transaction_status = { 'Status': '', 'RejectionReasonDetails': '', 'RejectionReason': '' }
+        self.transaction_status = { 'status': '', 'rejection_reason_details': '', 'rejection_reason': '' }
 
         # Extends constructor from parent class for extra processing
         super( Booking, self ).__init__( root_element )
@@ -54,16 +54,33 @@ class Booking( Api ):
         if not self.validate_api_key():
             return False
 
-        # Login to VRON
+        # Logs in VRON
         if not self.ron_login():
             return False
 
-        # Performs booking on VRON
-        self.request_status['Status'] = 'SUCCESS'
-        self.request_status['Error'] = ''
-        self.request_status['ErrorCode'] = ''
+        # Gets and adjusts tour code
+        tour_code = self.get_element_text( 'SupplierProductCode' )
+        if tour_code is None:
+            self.transaction_status['status'] = 'REJECTED'
+            self.transaction_status['rejection_reason'] = 'SupplierProductCode Missing'
+            self.transaction_status['rejection_reason_details'] = 'SupplierProductCode Missing'
 
-        return True
+        reservation = {
+            'strTourCode': tour_code,
+            'intBasisID': '',
+            'intSubBasisID': '',
+            'dteTourDate': '',
+            'intTourTimeID': '',
+            'strPaxFirstName': '',
+            'strPaxLastName': '',
+            'strPaxEmail': '',
+            'intNoPax_Adults': '',
+            'strGeneralComment': '',
+        }
+
+        # Tries to confirm booking on RON
+        result = self.ron_write_reservation( self.host_id, reservation )
+        return result
 
     def format_response( self ):
         """
@@ -72,7 +89,7 @@ class Booking( Api ):
         :return: String
         """
 
-        return "Status: " + self.request_status['Status'] + " Error: " +  self.request_status['Error'] + " ErrorCode: " +  self.request_status['ErrorCode']
+        return "Status: " + self.request_status['status'] + " Error: " +  self.request_status['error'] + " ErrorCode: " +  self.request_status['error_code']
 
         # formats xml response here
         return """<?xml version="1.0"?>
