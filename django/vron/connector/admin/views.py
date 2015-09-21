@@ -50,8 +50,8 @@ def config_list_json( request ):
 
     # settings
     info = {
-        'fields_to_select': [ 'id', 'option_name', 'option_value' ],
-        'fields_to_search': [ 'id', 'option_name', 'option_value' ],
+        'fields_to_select': [ 'id', 'name', 'value' ],
+        'fields_to_search': [ 'id', 'name', 'value' ],
         'default_order_by': 'id',
         'url_base_name': 'config',
         'namespace': 'admin:connector:'

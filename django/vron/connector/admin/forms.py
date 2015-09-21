@@ -25,8 +25,8 @@ class ConfigForm( BaseModelForm ):
 
     class Meta:
         model = Config
-        fields = [ 'option_name', 'option_value' ]
+        fields = [ 'name', 'value' ]
         widgets = {
-            'option_name': TextInput( attrs = { 'class': 'form-control', 'autofocus': 'true' } ),
-            'option_value': TextInput( attrs = { 'class': 'form-control' } )
+            'name': TextInput( attrs = { 'class': 'form-control', 'autofocus': 'true' } ),
+            'value': TextInput( attrs = { 'class': 'form-control' } )
         }

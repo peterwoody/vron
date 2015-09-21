@@ -37,39 +37,38 @@ def add_initial_config_data( apps, schema_editor ):
     # Insert basic config
     config = Config()
     config.id = 1
-    config.option_name  = 'Viator API key'
-    config.option_value = 'uija832jaUsj10098JauieyUlMajeuksa09823QQijq'
-    config.save()
-
-    config = Config()
-    config.id = 2
     config.option_name  = 'RON username'
     config.option_value = 'jose1647'
     config.save()
 
     config = Config()
-    config.id = 3
+    config.id = 2
     config.option_name  = 'RON password'
     config.option_value = '65fferua'
     config.save()
 
     config = Config()
-    config.id = 4
+    config.id = 3
     config.option_name  = 'MAX failed attempts'
     config.option_value = '5'
     config.save()
 
     config = Config()
-    config.id = 5
+    config.id = 4
     config.option_name  = 'E-mail for Error Notifications'
     config.option_value = 'humberto.mn@gmail.com'
     config.save()
 
+    config = Config()
+    config.id = 5
+    config.option_name  = 'API Key Base String'
+    config.option_value = '8Jkw98HQDKlhG342801shkUi3eD'
+    config.save()
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('connector', '0002_auto_20150918_0934'),
+        ('connector', '0001_initial'),
     ]
 
     operations = [

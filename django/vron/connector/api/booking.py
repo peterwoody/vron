@@ -7,7 +7,7 @@ API Class
 ##########################
 from vron.connector.api.api import Api
 from django.conf import settings
-
+import xmlrpc.client
 
 
 
@@ -41,7 +41,7 @@ class Booking( Api ):
 
     def process( self ):
         """
-        Passes viator data and makes RON request
+        Process viator data and makes RON request
 
         :return: String
         """
@@ -64,7 +64,12 @@ class Booking( Api ):
             return False
 
         # Performs booking on VRON
-        #@TODO
+        ron = xmlrpc.client.ServerProxy( "https://ron.respax.com.au:30443/section/xmlrpc/server-ron.php?config=train" )
+        self.request_status['Status'] = ron.ping()
+
+        #self.request_status['Status'] = 'SUCCESS'
+        self.request_status['Error'] = ''
+        self.request_status['ErrorCode'] = ''
 
         return True
 
@@ -74,6 +79,8 @@ class Booking( Api ):
 
         :return: String
         """
+
+        return "Status: " + self.request_status['Status'] + " Error: " +  self.request_status['Error'] + " ErrorCode: " +  self.request_status['ErrorCode']
 
         # formats xml response here
         return """<?xml version="1.0"?>
