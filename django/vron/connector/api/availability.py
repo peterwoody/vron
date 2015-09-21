@@ -24,7 +24,7 @@ class Availability( Api ):
      3- Returning XML response to Viator
     """
 
-    def __init__( self, xml_root ):
+    def __init__( self, root_element ):
         """
         Constructor responsible to authenticate the request
 
@@ -33,7 +33,7 @@ class Availability( Api ):
         """
 
         # Extends constructor from parent class for extra processing
-        super( Availability, self ).__init__( xml_root )
+        super( Availability, self ).__init__( root_element )
 
         # Declares additional class attributes
         self.request_status = { 'Status': '', 'Error': '', 'ErrorCode': '', 'ErrorMessage': '', 'ErrorDetails': '' }

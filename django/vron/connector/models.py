@@ -60,7 +60,7 @@ class Log( BaseModel ):
     Stores every request received and set its status
     """
 
-    external_reference = models.CharField( "external reference", max_length = 40 )
+    external_reference = models.CharField( "external reference", max_length = 40, blank = True, null = True )
     log_status = models.ForeignKey( 'LogStatus' )
     error_message = models.TextField( "error message", blank = True, null = True )
     attempts = models.IntegerField( "attempts", default = 1 )

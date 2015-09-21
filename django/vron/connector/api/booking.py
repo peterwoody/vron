@@ -24,7 +24,7 @@ class Booking( Api ):
      3- Returning XML response to Viator
     """
 
-    def __init__( self, xml_root ):
+    def __init__( self, root_element ):
         """
         Constructor responsible to authenticate the request
 
@@ -32,12 +32,13 @@ class Booking( Api ):
         :return: None
         """
 
-        # Extends constructor from parent class for extra processing
-        super( Booking, self ).__init__( xml_root )
-
         # Declares additional class attributes
-        self.request_status = { 'Status': '', 'Error': '', 'ErrorCode': '', 'ErrorMessage': '', 'ErrorDetails': '' }
         self.transaction_status = { 'Status': '', 'RejectionReasonDetails': '', 'RejectionReason': '' }
+
+        # Extends constructor from parent class for extra processing
+        super( Booking, self ).__init__( root_element )
+
+
 
     def process( self ):
         """
@@ -51,23 +52,14 @@ class Booking( Api ):
 
         # Validates api key
         if not self.validate_api_key():
-            self.request_status['Status'] = 'ERROR'
-            self.request_status['Error'] = 'ApiKey'
-            self.request_status['ErrorCode'] = 'Invalid ApiKey'
             return False
 
         # Login to VRON
-        if not self.login_ron():
-            self.request_status['Status'] = 'ERROR'
-            self.request_status['Error'] = 'SupplierId'
-            self.request_status['ErrorCode'] = "Can't login to RON"
+        if not self.ron_login():
             return False
 
         # Performs booking on VRON
-        ron = xmlrpc.client.ServerProxy( "https://ron.respax.com.au:30443/section/xmlrpc/server-ron.php?config=train" )
-        self.request_status['Status'] = ron.ping()
-
-        #self.request_status['Status'] = 'SUCCESS'
+        self.request_status['Status'] = 'SUCCESS'
         self.request_status['Error'] = ''
         self.request_status['ErrorCode'] = ''
 

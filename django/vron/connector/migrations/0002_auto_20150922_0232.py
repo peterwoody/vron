@@ -37,33 +37,46 @@ def add_initial_config_data( apps, schema_editor ):
     # Insert basic config
     config = Config()
     config.id = 1
-    config.option_name  = 'RON username'
-    config.option_value = 'jose1647'
+    config.name  = 'RON username'
+    config.value = 'jose1647'
     config.save()
 
     config = Config()
     config.id = 2
-    config.option_name  = 'RON password'
-    config.option_value = '65fferua'
+    config.name  = 'RON password'
+    config.value = '65fferua'
     config.save()
 
     config = Config()
     config.id = 3
-    config.option_name  = 'MAX failed attempts'
-    config.option_value = '5'
+    config.name  = 'RON Test Server'
+    config.value = 'https://ron.respax.com.au:30443/section/xmlrpc/server-ron.php?config=train'
     config.save()
 
     config = Config()
     config.id = 4
-    config.option_name  = 'E-mail for Error Notifications'
-    config.option_value = 'humberto.mn@gmail.com'
+    config.name  = 'RON Live Server'
+    config.value = 'https://ron.respax.com.au:30443/section/xmlrpc/server-ron.php?config=live'
     config.save()
 
     config = Config()
     config.id = 5
-    config.option_name  = 'API Key Base String'
-    config.option_value = '8Jkw98HQDKlhG342801shkUi3eD'
+    config.name  = 'MAX failed attempts'
+    config.value = '5'
     config.save()
+
+    config = Config()
+    config.id = 6
+    config.name  = 'E-mail for Error Notifications'
+    config.value = 'humberto.mn@gmail.com'
+    config.save()
+
+    config = Config()
+    config.id = 7
+    config.name  = 'API Key Base String'
+    config.value = '8Jkw98HQDKlhG342801shkUi3eD'
+    config.save()
+
 
 class Migration(migrations.Migration):
 
