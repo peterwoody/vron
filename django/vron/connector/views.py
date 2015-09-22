@@ -38,7 +38,8 @@ def api( request ):
     xml = response.content
 
     # Parses XML string into object (http://lxml.de/parsing.html)
-    root = etree.fromstring( xml )
+    parser = etree.XMLParser( remove_blank_text = True )
+    root = etree.fromstring( xml, parser )
 
     # Reads root tag name to determine the kind of request call
     if 'BookingRequest' in root.tag:

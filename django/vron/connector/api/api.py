@@ -51,6 +51,7 @@ class Api( object ):
     def __prepare_root_element( self, root_element ):
         """
         Parses XML root element with ixml
+
         :return: ixml root element
         """
         # Removes all namespace texts
@@ -63,22 +64,30 @@ class Api( object ):
         objectify.deannotate( root_element, cleanup_namespaces = True )
         return root_element
 
-    def get_element( self, element_name ):
+    def get_element( self, element_name, base_element = None ):
         """
         Gets the xml element by name
+
+        :param: String element_name
+        :param: Lxml element base_element
         :return: Mixed
         """
-        element = self.root_element.find( element_name )
+        if base_element is None:
+            base_element = self.root_element
+        element = base_element.find( element_name )
         if element == 'None':
             return None
         return element
 
-    def get_element_text( self, element_name ):
+    def get_element_text( self, element_name, base_element = None ):
         """
         Gets the xml element content by element name
+
+        :param: String element_name
+        :param: Lxml element base_element
         :return: Mixed
         """
-        element = self.get_element( element_name )
+        element = self.get_element( element_name, base_element )
         if element is not None:
             return element.text
         return None
@@ -86,6 +95,7 @@ class Api( object ):
     def validate_api_key( self ):
         """
         Checks if API key is valid
+
         :return: Boolean
         """
 
@@ -113,6 +123,7 @@ class Api( object ):
     def log_request( self, log_status_id, error_message = None ):
         """
         Saves request info to the database
+
         :param: external_reference
         :param: log_status_id
         :param: error_message
@@ -128,6 +139,7 @@ class Api( object ):
     def ron_connect( self ):
         """
         Tries to connect to the RON server
+
         :return: Mixed
         """
         url = self.config_info[settings.ID_CONFIG_RON_TEST_URL]
@@ -138,6 +150,7 @@ class Api( object ):
     def ron_login( self ):
         """
         Tries to login to the RON api
+
         :return: Mixed
         """
 
@@ -171,6 +184,7 @@ class Api( object ):
         """
         Returns a dictionary containing a single associative array of
         extended information for the host including contact information.
+
         :param: Int host_id
         :param: Dictionary reservation
         :return: Mixed
