@@ -66,7 +66,8 @@ class Api( object ):
 
     def get_element( self, element_name, base_element = None ):
         """
-        Gets the xml element by name
+        Gets the xml element by name (if there are multiple elements, only
+        the first one is returned). Use 'get_element_list' for that.
 
         :param: String element_name
         :param: Lxml element base_element
@@ -91,6 +92,21 @@ class Api( object ):
         if element is not None:
             return element.text
         return None
+
+    def get_element_list( self, element_name, base_element = None ):
+        """
+        Gets a list of xml elements by name
+
+        :param: String element_name
+        :param: Lxml element base_element
+        :return: Mixed
+        """
+        if base_element is None:
+            base_element = self.root_element
+        elements = base_element.findall( element_name )
+        if elements == 'None':
+            return None
+        return elements
 
     def validate_api_key( self ):
         """
@@ -180,12 +196,32 @@ class Api( object ):
             self.request_status['error_details'] = error.faultString
             return False
 
-    def ron_write_reservation( self, host_id, reservation ):
+    def ron_read_tour_pickups( self, tour_code, tour_time_id, basis_id ):
+        """
+        Returns a list of dictionaries from the host each containing the details of a
+        pickup location and time for the specified tour, time and basis combination
+
+        :param: String tour_code
+        :param: String tour_time_id
+        :param: String basis_id
+        :return: List
+        """
+
+        # Creates ron XML-RPC server connection
+        ron = self.ron_connect()
+
+        # Calls ron method
+        try:
+            result = ron.readTourPickups( self.host_id, tour_code, tour_time_id, basis_id )
+            return result
+        except xmlrpc.client.Fault as error:
+            return False
+
+    def ron_write_reservation( self, reservation ):
         """
         Returns a dictionary containing a single associative array of
         extended information for the host including contact information.
 
-        :param: Int host_id
         :param: Dictionary reservation
         :return: Mixed
         """
@@ -195,7 +231,7 @@ class Api( object ):
 
         # Calls ron method
         try:
-            result = ron.writeReservation( self.host_id, -1, reservation, { 'strPaymentOption': 'full-agent' } )
-            return result
+            result = ron.writeReservation( self.host_id, -1, reservation, { 'strPaymentOption': 'full-agent' }, {} )
+            return { 'status': True, 'response': result }
         except xmlrpc.client.Fault as error:
-            return False
+            return { 'status': False, 'response': error.faultString }
