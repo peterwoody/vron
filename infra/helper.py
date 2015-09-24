@@ -29,7 +29,7 @@ SERVERS = {
         "HTTPS_PORT" : 443,             # The HTTPS port on the server.
         "HTTP_FORWARDED_PORT" : 80,     # The HTTP forwarded port
         "HTTPS_FORWARDED_PORT" : 443,   # The HTTPS forwarded port
-        "BRANCH" : "dev",               # Vagrant server doesn't require git
+        "BRANCH" : "master",            # Vagrant server doesn't require git
     },
 
     "prod" : {

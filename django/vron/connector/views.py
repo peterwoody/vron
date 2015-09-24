@@ -32,27 +32,25 @@ def api( request ):
     """
 
     # Reads XML request from Viator
-    # @TODO This is a temporary way to test VIATOR request
-    # @TODO Change this to read from the Viator's POST request
-    response = requests.get( "http://www.intertech.com.br/viator_request.xml" )
-    xml = response.content
+    if request.method == 'POST':
 
-    # Parses XML string into object (http://lxml.de/parsing.html)
-    parser = etree.XMLParser( remove_blank_text = True )
-    root = etree.fromstring( xml, parser )
+        # Parses XML string into object (http://lxml.de/parsing.html)
+        xml = request.body
+        parser = etree.XMLParser( remove_blank_text = True )
+        root = etree.fromstring( xml, parser )
 
-    # Reads root tag name to determine the kind of request call
-    if 'BookingRequest' in root.tag:
-        api = Booking( root )
+        # Reads root tag name to determine the kind of request call
+        if 'BookingRequest' in root.tag:
+            api = Booking( root )
 
-    elif 'AvailabilityRequest' in root.tag:
-        api = Availability( root )
+        elif 'AvailabilityRequest' in root.tag:
+            api = Availability( root )
 
-    elif 'BatchAvailabilityRequest' in root.tag:
-        api = BatchAvailability( root )
+        elif 'BatchAvailabilityRequest' in root.tag:
+            api = BatchAvailability( root )
 
-    # Process API request
-    result = api.process()
+        # Process API request
+        result = api.process()
 
-    # Returns formatted response to Viator
-    return HttpResponse( api.format_response() )
+        # Returns formatted response to Viator
+        return HttpResponse( api.format_response() )
