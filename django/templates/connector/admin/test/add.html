@@ -18,6 +18,12 @@
 				return validate_empty_fields( this, '{{ form.get_required_fields }}' );
 			});
 
+            // Remove blank spaces between tags
+            $( "#id_xml" ).blur( function() {
+				var str = $( this ).val().trim( str.replace( /\r?\n|\r/g,'' ) );
+                $( this ).val( str )
+			});
+
 			// JS for onload
 			{{ on_load|default:'' }}
 

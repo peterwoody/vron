@@ -15,6 +15,7 @@ from django.conf import settings
 from vron.core.util import get_object_or_false
 from django.utils.html import strip_spaces_between_tags
 import requests
+import re
 
 
 
@@ -380,8 +381,11 @@ def test( request ):
     # If form was submitted, it tries to submit to API url
     if form.is_valid():
 
+        # Removes empty spaces between tags
         xml = strip_spaces_between_tags( request.POST['xml'] )
+        xml = re.sub( r'^\s+<','<', xml )
 
+        # sends post request to the API url
         headers = { 'Content-Type': 'application/xml' }
         response = requests.post(
             settings.BASE_URL + reverse( 'connector:api' ) ,
