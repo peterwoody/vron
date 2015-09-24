@@ -38,8 +38,7 @@ def api( request ):
 
         # setup XML Validation with lxml
         schema_root = etree.XML( '''\
-            <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                <xsd:element name="a" type="xsd:integer"/>
+            <xsd:schema xmlns="http://toursgds.com/api/01">
             </xsd:schema>
         ''' )
         schema = etree.XMLSchema( schema_root )
