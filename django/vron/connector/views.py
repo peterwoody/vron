@@ -32,6 +32,7 @@ def api( request ):
     """
 
     # Reads XML request from Viator
+    response = ''
     if request.method == 'POST':
 
         # Parses XML string into object (http://lxml.de/parsing.html)
@@ -53,4 +54,6 @@ def api( request ):
         result = api.process()
 
         # Returns formatted response to Viator
-        return HttpResponse( api.format_response() )
+        response = api.format_response()
+
+    return response
