@@ -9,7 +9,7 @@ Form definitions used by views/templates from the admin app
 ##########################
 from django import forms
 from django.forms import TextInput
-from vron.core.forms import BaseModelForm
+from vron.core.forms import BaseModelForm, BaseForm
 from vron.connector.models import Config, Log, Key
 
 
@@ -50,3 +50,16 @@ class KeyForm( BaseModelForm ):
             'name': TextInput( attrs = { 'class': 'form-control', 'autofocus': 'true' } ),
             'comments': TextInput( attrs = { 'class': 'form-control' } )
         }
+
+
+
+
+
+#######################
+# TEST FORMS
+#######################
+class TestForm( BaseForm ):
+    """
+    Form for Testing API request
+    """
+    xml = forms.CharField( required = True, widget = forms.Textarea( attrs = { 'placeholder':'XML Request', 'class': 'form-control' } ) )

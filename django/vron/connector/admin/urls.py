@@ -36,4 +36,7 @@ urlpatterns = patterns('',
     url( r'^keys/edit/(?P<key_id>\d+)$', views.key_edit, name = 'key_edit' ),
     url( r'^keys/delete/(?P<key_id>\d+)$', views.key_delete, name = 'key_delete' ),
 
+    # Test Request
+    url( r'^test$', views.test, name = 'test' ),
+
 )

@@ -10,7 +10,7 @@ from vron.core.util import build_datatable_json
 from vron.core.decorators import restrict_internal_ips
 from vron.admin.views import admin_check
 from vron.connector.models import Config, Log, LogStatus, Key
-from vron.connector.admin.forms import ConfigForm, KeyForm
+from vron.connector.admin.forms import ConfigForm, KeyForm, TestForm
 from django.conf import settings
 from vron.core.util import get_object_or_false
 
@@ -353,3 +353,29 @@ def key_delete( request, key_id ):
     # Redirects with success message
     messages.success( request, 'Key was successfully deleted.')
     return HttpResponseRedirect( reverse( 'admin:connector:keys' ) )
+
+
+
+
+
+#######################
+# TEST VIEWS
+#######################
+@restrict_internal_ips
+@user_passes_test( admin_check )
+def test( request ):
+    """
+    Test API request
+
+    :param: request
+    :return: String
+    """
+
+    # Instantiates FORM
+    form = TestForm( request.POST or None )
+
+    # Template data
+    context = { 'form': form }
+
+    # Prints Template
+    return render( request, 'connector/admin/test/add.html', context )
