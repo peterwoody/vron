@@ -381,7 +381,7 @@ def test( request ):
 
         headers = { 'Content-Type': 'application/xml' }
         response = requests.post(
-            settings.base_url + reverse( 'connector:api' ) ,
+            settings.BASE_URL + reverse( 'connector:api' ) ,
             data = request.POST['xml'],
             headers = headers
         ).text
