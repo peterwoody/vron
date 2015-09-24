@@ -38,7 +38,7 @@ def api( request ):
 
         # Parses XML string into object (http://lxml.de/parsing.html)
         try:
-            parser = etree.XMLParser( dtd_validation = True, remove_blank_text = True )
+            parser = etree.XMLParser( remove_blank_text = True )
             root = etree.fromstring( xml, parser )
         except etree.XMLSyntaxError:
             return HttpResponse( "Invalid XML" )
