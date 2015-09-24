@@ -55,6 +55,11 @@
 
                                         {{ response }}
 
+                                        <div class="text-center buttons">
+                                            <a href="{% url 'admin:connector:test' %}" class="btn btn-success"><i class="fa fa-check-square"></i>New Test</a>
+                                            <a href="{% url 'admin:home' %}" class="btn btn-default"><i class="fa fa-times"></i>Cancel</a>
+                                        </div>
+
                                     {% else %}
                                 
                                         {% include "admin/_common/form.html" %}
