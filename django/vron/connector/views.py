@@ -34,11 +34,22 @@ def api( request ):
     # Reads XML request from Viator
     response = ''
     if request.method == 'POST':
+        xml = request.body
+
+        # setup XML Validation with lxml
+        schema_root = etree.XML( '''\
+            <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                <xsd:element name="a" type="xsd:integer"/>
+            </xsd:schema>
+        ''' )
+        schema = etree.XMLSchema( schema_root )
 
         # Parses XML string into object (http://lxml.de/parsing.html)
-        xml = request.body
-        parser = etree.XMLParser( remove_blank_text = True )
-        root = etree.fromstring( xml, parser )
+        try:
+            parser = etree.XMLParser( schema = schema, remove_blank_text = True )
+            root = etree.fromstring( xml, parser )
+        except etree.XMLSyntaxError:
+            return HttpResponse( "Invalid XML" )
 
         # Reads root tag name to determine the kind of request call
         if 'BookingRequest' in root.tag:

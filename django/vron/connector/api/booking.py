@@ -217,7 +217,7 @@ class Booking( Api ):
             return "REQUEST Error: " + self.request_status['status'] + " - " + self.request_status['error'] + " - " + self.request_status['error_code']
         elif self.transaction_status['status'] != '':
             return "TRANSACTION Error: " + self.transaction_status['rejection_reason_details']
-        return "Booking Confirmed! Confirmation number:" + str( self.booking_result['response'] )
+        return "Booking Confirmed!"
 
     def reject_booking( self, details, status = 'REJECTED', reason = 'OTHER' ):
         """
