@@ -13,6 +13,7 @@ from vron.connector.models import Config, Log, LogStatus, Key
 from vron.connector.admin.forms import ConfigForm, KeyForm, TestForm
 from django.conf import settings
 from vron.core.util import get_object_or_false
+import requests
 
 
 
@@ -372,10 +373,21 @@ def test( request ):
     """
 
     # Instantiates FORM
+    response = None
     form = TestForm( request.POST or None )
 
+    # If form was submitted, it tries to submit to API url
+    if form.is_valid():
+
+        headers = { 'Content-Type': 'application/xml' }
+        response = requests.post(
+            reverse( 'connector:api' ) ,
+            data = request.POST['xml'],
+            headers = headers
+        ).text
+
     # Template data
-    context = { 'form': form }
+    context = { 'form': form, 'cancel_url': reverse( 'admin:home' ), 'response': response }
 
     # Prints Template
     return render( request, 'connector/admin/test/add.html', context )

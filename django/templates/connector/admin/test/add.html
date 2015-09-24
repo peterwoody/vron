@@ -50,27 +50,16 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-lg-6">
+
+                                    {% if response != "" %}
+
+                                        {{ response }}
+
+                                    {% else %}
                                 
-                                    <form action="{% url 'connector:api' %}" method="post" id="main_form">
+                                        {% include "admin/_common/form.html" %}
 
-                                        {% csrf_token %}
-
-                                        {% for field in form %}
-
-                                            <div class="form-group {% if field.errors %}has-error{% endif %}">
-                                                <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                                {{ field }}
-                                                {{ field.errors }}
-                                            </div>
-
-                                        {% endfor %}
-
-                                        <div class="text-center buttons">
-                                            <button type="submit" class="btn btn-success"><i class="fa fa-check-square"></i>Submit</button>
-                                            <a href="{% url 'admin:home' %}" class="btn btn-default"><i class="fa fa-times"></i>Cancel</a>
-                                        </div>
-
-                                    </form>
+                                    {% endif %}
                                     
                                 </div>
 
