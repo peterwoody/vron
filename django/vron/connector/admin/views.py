@@ -373,7 +373,7 @@ def test( request ):
     """
 
     # Instantiates FORM
-    response = None
+    response = ''
     form = TestForm( request.POST or None )
 
     # If form was submitted, it tries to submit to API url
