@@ -384,7 +384,7 @@ def test( request ):
             settings.BASE_URL + reverse( 'connector:api' ) ,
             data = request.POST['xml'],
             headers = headers
-        ).text
+        ).content
 
     # Template data
     context = { 'form': form, 'cancel_url': reverse( 'admin:home' ), 'response': response }
