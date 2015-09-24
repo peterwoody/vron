@@ -13,6 +13,7 @@ from vron.connector.models import Config, Log, LogStatus, Key
 from vron.connector.admin.forms import ConfigForm, KeyForm, TestForm
 from django.conf import settings
 from vron.core.util import get_object_or_false
+from django.utils.html import strip_spaces_between_tags
 import requests
 
 
@@ -379,10 +380,12 @@ def test( request ):
     # If form was submitted, it tries to submit to API url
     if form.is_valid():
 
+        xml = strip_spaces_between_tags( request.POST['xml'] )
+
         headers = { 'Content-Type': 'application/xml' }
         response = requests.post(
             settings.BASE_URL + reverse( 'connector:api' ) ,
-            data = request.POST['xml'],
+            data = xml,
             headers = headers
         ).text
 
