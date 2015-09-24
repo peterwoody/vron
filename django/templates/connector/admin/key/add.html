@@ -12,62 +12,59 @@
 		 *
 		 */
 		$(document).ready(function() {
-			
-			// funcoes de onload definidos pelo controller
+
+			// JS FORM Validation
+			$( "#main_form" ).submit( function() {
+				return validate_empty_fields( this, '{{ form.get_required_fields }}' );
+			});
+
+            // Sets key preview
+            $( "#id_name" ).keyup( function() {
+				$( "#preview").html( $( this ).val() )
+			});
+
+			// JS for onload
 			{{ on_load|default:'' }}
 			
 		});
-
 		
 	</script>
 	
 {% endblock head %}
 
-	
 
 {% block content %}
-
 
             <div class="row">
             
                 <div class="col-lg-12">
-                    <h1 class="page-header">View Config Details</h1>
+                    <h1 class="page-header">Add New Key</h1>
                 </div>
                 
             </div>
-            
+
             {% include "admin/_common/status.html" %}
             
             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
-
                         <div class="panel-heading">
-                            Config ID# {{ config.id }}
+                            Key Details
                         </div>
                                                 
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-lg-6">
                                 
-                                	<dl class="dl-horizontal">
-		                                
-		                                <dt>Option Name:</dt>
-		                                <dd>{{ config.name }}</dd>
-		                                
-		                                <dt>Option Value:</dt>
-		                                <dd>{{ config.value }}</dd>
-		                                
-		                            </dl>
-		                            
-		                            <div class="text-center buttons">
-		                            	<a href="{% url 'admin:connector:config' %}" class="btn btn-default"><i class="fa fa-arrow-left"></i>Go Back</a>
-		                                <a href="{% url 'admin:connector:config_edit' config.id %}" class="btn btn-default"><i class="fa fa-edit"></i>Edit Data</a>
-		                                <a href="#" onclick="confirm_delete( '{% url 'admin:connector:config_delete' config.id %}' )" class="btn btn-danger"><i class="fa fa-trash-o"></i>Delete</a>
-									</div>
+                                    {% include "admin/_common/form.html" %}
                                     
                                 </div>
+                                <div class="col-lg-6">
 
+                                    <h2>Key Preview</h2>
+                                    {{ base_key }}<span id="preview"></span>
+
+                                </div>
                             </div>
                             
                         </div>

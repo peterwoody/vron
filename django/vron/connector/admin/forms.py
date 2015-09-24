@@ -10,7 +10,7 @@ Form definitions used by views/templates from the admin app
 from django import forms
 from django.forms import TextInput
 from vron.core.forms import BaseModelForm
-from vron.connector.models import Config, Log
+from vron.connector.models import Config, Log, Key
 
 
 
@@ -29,4 +29,24 @@ class ConfigForm( BaseModelForm ):
         widgets = {
             'name': TextInput( attrs = { 'class': 'form-control', 'autofocus': 'true' } ),
             'value': TextInput( attrs = { 'class': 'form-control' } )
+        }
+
+
+
+
+
+#######################
+# KEY FORMS
+#######################
+class KeyForm( BaseModelForm ):
+    """
+    Form for ADD and EDIT KEYS
+    """
+
+    class Meta:
+        model = Key
+        fields = [ 'name', 'comments' ]
+        widgets = {
+            'name': TextInput( attrs = { 'class': 'form-control', 'autofocus': 'true' } ),
+            'comments': TextInput( attrs = { 'class': 'form-control' } )
         }

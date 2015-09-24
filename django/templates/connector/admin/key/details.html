@@ -31,7 +31,7 @@
             <div class="row">
             
                 <div class="col-lg-12">
-                    <h1 class="page-header">View Config Details</h1>
+                    <h1 class="page-header">View Key Details</h1>
                 </div>
                 
             </div>
@@ -43,7 +43,7 @@
                     <div class="panel panel-default">
 
                         <div class="panel-heading">
-                            Config ID# {{ config.id }}
+                            Key ID# {{ key.id }}
                         </div>
                                                 
                         <div class="panel-body">
@@ -52,18 +52,18 @@
                                 
                                 	<dl class="dl-horizontal">
 		                                
-		                                <dt>Option Name:</dt>
-		                                <dd>{{ config.name }}</dd>
+		                                <dt>Key:</dt>
+		                                <dd>{{ base_key }}{{ key.name }}</dd>
 		                                
-		                                <dt>Option Value:</dt>
-		                                <dd>{{ config.value }}</dd>
+		                                <dt>Comments:</dt>
+		                                <dd>{{ key.comments }}</dd>
 		                                
 		                            </dl>
 		                            
 		                            <div class="text-center buttons">
-		                            	<a href="{% url 'admin:connector:config' %}" class="btn btn-default"><i class="fa fa-arrow-left"></i>Go Back</a>
-		                                <a href="{% url 'admin:connector:config_edit' config.id %}" class="btn btn-default"><i class="fa fa-edit"></i>Edit Data</a>
-		                                <a href="#" onclick="confirm_delete( '{% url 'admin:connector:config_delete' config.id %}' )" class="btn btn-danger"><i class="fa fa-trash-o"></i>Delete</a>
+		                            	<a href="{% url 'admin:connector:keys' %}" class="btn btn-default"><i class="fa fa-arrow-left"></i>Go Back</a>
+		                                <a href="{% url 'admin:connector:key_edit' key.id %}" class="btn btn-default"><i class="fa fa-edit"></i>Edit Data</a>
+		                                <a href="#" onclick="confirm_delete( '{% url 'admin:connector:key_delete' key.id %}' )" class="btn btn-danger"><i class="fa fa-trash-o"></i>Delete</a>
 									</div>
                                     
                                 </div>

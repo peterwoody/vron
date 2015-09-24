@@ -141,9 +141,15 @@ def build_datatable_json( request, objects, info ):
             if '.' in field:
                 split = field.split( '.' )
                 sub_obj = getattr( obj, split[0] )
-                values.append( getattr( sub_obj, split[1] ) )
+                value = getattr( sub_obj, split[1] )
+                if 'prepend' in info and split[0] in info['prepend']:
+                    value = info['prepend'][split[0]] + value
+                values.append( value )
             else:
-                values.append( getattr( obj, field ) )
+                value = getattr( obj, field )
+                if 'prepend' in info and field in info['prepend']:
+                    value = info['prepend'][field] + value
+                values.append( value )
         buttons_html = base_buttons_html.replace( "#details_link#", reverse( info['namespace'] + info['url_base_name'] + '_details', args = ( obj.id, ) ) )
         buttons_html = buttons_html.replace( "#edit_link#", reverse( info['namespace'] + info['url_base_name'] + '_edit', args = ( obj.id, ) ) )
         buttons_html = buttons_html.replace( "#delete_link#", reverse( info['namespace'] + info['url_base_name'] + '_delete', args = ( obj.id, ) ) )

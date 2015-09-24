@@ -91,6 +91,11 @@
                                         <a href="{% url 'admin:connector:config' %}">VRON Settings</a>
                                     </li>
                                 {% endif %}
+                                {% if perms.connector.admin_view_key %}
+                                    <li>
+                                        <a href="{% url 'admin:connector:keys' %}">VRON Keys</a>
+                                    </li>
+                                {% endif %}
                                 {% if perms.core.admin_view_admin_user %}
                                     <li>
                                         <a href="{% url 'admin:core:admin_users' %}">Admin Users</a>
