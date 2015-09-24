@@ -56,4 +56,4 @@ def api( request ):
         # Returns formatted response to Viator
         response = api.format_response()
 
-    return response
+    return HttpResponse( response )
