@@ -471,7 +471,8 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'ApiKey', None, self.get_api_key() )
         self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
         self.response_xml.create_element( self.request_xml.get_element( 'SupplierId' ) )
-        timestamp = datetime.date.now().strftime( 'yyyy-MM-ddTHH:mm:ss.SSSZ' )
+        now = datetime.datetime.now()
+        timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%fZ" )
         self.response_xml.create_element( 'Timestamp', None, timestamp )
         #self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
 
