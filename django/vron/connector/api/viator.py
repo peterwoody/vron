@@ -494,7 +494,7 @@ class Viator( XmlManager ):
         transaction_status = 'CONFIRMED' if confirmation_number else 'REJECTED'
         self.response_xml.create_element( 'Status', transaction_status_element, transaction_status )
         if transaction_status == 'REJECTED':
-            reject_reason = 'Error on RON: ' + transaction_error
+            reject_reason = 'Request Error' if request_status == 'ERROR' else str( transaction_error )
             self.response_xml.create_element( 'RejectionReasonDetails', transaction_status_element, reject_reason )
             self.response_xml.create_element( 'RejectionReason', transaction_status_element, 'OTHER' )
 
