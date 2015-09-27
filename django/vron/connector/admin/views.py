@@ -392,6 +392,8 @@ def test( request ):
             data = xml,
             headers = headers
         ).text
+        return HttpResponse( response, content_type = "application/xml" )
+
 
     # Template data
     context = { 'form': form, 'cancel_url': reverse( 'admin:home' ), 'response': response }
