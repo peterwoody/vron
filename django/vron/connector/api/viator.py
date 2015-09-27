@@ -470,13 +470,13 @@ class Viator( XmlManager ):
         # Creates elements to identify the booking request
         self.response_xml.create_element( 'ApiKey', None, self.get_api_key() )
         self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
-        self.response_xml.create_element( 'SupplierId', None, self.get_host_id() )
+        self.response_xml.create_element( self.request_xml.get_element( 'SupplierId' ) )
+        self.response_xml.create_element( self.request_xml.get_element( 'Timestamp' ) )
         self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
-        self.response_xml.create_element( 'Timestamp', None, self.get_timestamp() )
 
         # Copies the custom TourOptions made for RESPAX
-        tour_options_element = self.request_xml.get_element( 'TourOptions' )
-        self.response_xml.create_element( tour_options_element )
+        #tour_options_element = self.request_xml.get_element( 'TourOptions' )
+        #self.response_xml.create_element( tour_options_element )
 
         # Creates elements to identify the Request Status
         request_status_element = self.response_xml.create_element( 'RequestStatus' )
