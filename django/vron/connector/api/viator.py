@@ -472,9 +472,8 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
         self.response_xml.create_element( self.request_xml.get_element( 'SupplierId' ) )
         now = datetime.datetime.now()
-        timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%fZ" )
+        timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%j+10:00" ) # %z is not being recognized
         self.response_xml.create_element( 'Timestamp', None, timestamp )
-        #self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
 
         # Copies the custom TourOptions made for RESPAX
         #tour_options_element = self.request_xml.get_element( 'TourOptions' )
