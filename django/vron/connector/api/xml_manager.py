@@ -78,7 +78,7 @@ class XmlManager( object ):
         # Tries to parse with lxml
         try:
             parser = etree.XMLParser( remove_blank_text = True )
-            xml_root = etree.fromstring( xml, parser )
+            xml_root = etree.fromstring( bytes( xml, 'utf-8' ), parser )
             self.xml_root = self.cleanup( xml_root )
             return True
         except etree.XMLSyntaxError as error:
