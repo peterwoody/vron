@@ -9,11 +9,9 @@ These are the views that control the requests received
 ##########################
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from lxml import etree
+from vron.connector.api.api import Api
 import requests
-from vron.connector.api.booking import Booking
-from vron.connector.api.availability import Availability
-from vron.connector.api.batch_availability import BatchAvailability
+
 
 
 
@@ -31,29 +29,17 @@ def api( request ):
     :return: String
     """
 
-    # Reads XML request from Viator
-    response = ''
-    if request.method == 'POST':
+    # Reads XML content
+    if 'debug' in request.GET:
+        response = requests.get( "http://www.intertech.com.br/viator_request.xml" )
+        xml_raw = response.content
+    elif request.method == 'POST':
+        xml_raw = request.body
+    else:
+        xml_raw = ''
 
-        # Parses XML string into object (http://lxml.de/parsing.html)
-        xml = request.body
-        parser = etree.XMLParser( remove_blank_text = True )
-        root = etree.fromstring( xml, parser )
+    # Handles API request
+    api = Api( xml_raw )
 
-        # Reads root tag name to determine the kind of request call
-        if 'BookingRequest' in root.tag:
-            api = Booking( root )
-
-        elif 'AvailabilityRequest' in root.tag:
-            api = Availability( root )
-
-        elif 'BatchAvailabilityRequest' in root.tag:
-            api = BatchAvailability( root )
-
-        # Process API request
-        result = api.process()
-
-        # Returns formatted response to Viator
-        response = api.format_response()
-
-    return HttpResponse( response )
+    # Returns XML response
+    return HttpResponse( api.process(), content_type = "application/xml" )
