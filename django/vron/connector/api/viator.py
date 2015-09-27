@@ -472,7 +472,7 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
         self.response_xml.create_element( self.request_xml.get_element( 'SupplierId' ) )
         self.response_xml.create_element( self.request_xml.get_element( 'Timestamp' ) )
-        self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
+        #self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
 
         # Copies the custom TourOptions made for RESPAX
         #tour_options_element = self.request_xml.get_element( 'TourOptions' )
