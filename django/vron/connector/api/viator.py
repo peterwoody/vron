@@ -471,7 +471,8 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'ApiKey', None, self.get_api_key() )
         self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
         self.response_xml.create_element( self.request_xml.get_element( 'SupplierId' ) )
-        self.response_xml.create_element( self.request_xml.get_element( 'Timestamp' ) )
+        timestamp = datetime.date.now().strftime( 'yyyy-MM-ddTHH:mm:ss.SSSZ' )
+        self.response_xml.create_element( 'Timestamp', None, timestamp )
         #self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
 
         # Copies the custom TourOptions made for RESPAX
@@ -488,9 +489,6 @@ class Viator( XmlManager ):
             self.response_xml.create_element( 'ErrorMessage', request_error_element, request_error_message )
             self.response_xml.create_element( 'ErrorDetails', request_error_element, 'Error on TAG ' + request_error_tag )
 
-        # Creates elements to identify the traveller
-        self.response_xml.create_element( 'TravellerIdentifier', None, self.get_traveller_identifier() )
-        
         # Creates elements to identify the Transaction Status
         transaction_status_element = self.response_xml.create_element( 'TransactionStatus' )
         transaction_status = 'CONFIRMED' if confirmation_number else 'REJECTED'
