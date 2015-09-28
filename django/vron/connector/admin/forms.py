@@ -11,6 +11,9 @@ from django import forms
 from django.forms import TextInput
 from vron.core.forms import BaseModelForm, BaseForm
 from vron.connector.models import Config, Log, Key
+from django.conf import settings
+from django.core.urlresolvers import reverse
+
 
 
 
@@ -62,4 +65,11 @@ class TestForm( BaseForm ):
     """
     Form for Testing API request
     """
-    xml = forms.CharField( required = True, widget = forms.Textarea( attrs = { 'placeholder':'XML Request', 'class': 'form-control' } ) )
+    url = forms.CharField(
+        required = True,
+        widget = forms.TextInput( attrs = { 'placeholder':'URL', 'class': 'form-control'} )
+    )
+    xml = forms.CharField(
+        required = True,
+        widget = forms.Textarea( attrs = { 'placeholder':'XML Request', 'class': 'form-control' } )
+    )

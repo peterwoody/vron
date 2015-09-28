@@ -29,12 +29,13 @@ class Api( object ):
 
     """
 
-    def __init__( self, xml_raw ):
+    def __init__( self, xml_raw, mode = 'train' ):
         """
         Constructor responsible to set class attributes and
         to process the right request
 
         :param: xml_raw
+        :param: mode
         :return: None
         """
 
@@ -45,10 +46,11 @@ class Api( object ):
             config[config_option.id] = config_option.value
 
         # Instantiates class attributes
+        self.mode = mode
         self.config_info = config
         self.request_xml = XmlManager( xml_raw )
         self.response_xml = XmlManager()
-        self.ron = Ron( config )
+        self.ron = Ron( config, mode )
         self.viator = Viator( self.request_xml, self.response_xml )
 
         # Errors
@@ -65,6 +67,7 @@ class Api( object ):
 
         :return: XML
         """
+        return self.ron.url
         # If XML is valid, gets root tag name to call appropriate API method
         if self.request_xml.validated:
             tag = self.request_xml.get_tag_name()
@@ -131,7 +134,7 @@ class Api( object ):
             'intSubBasisID': self.viator.get_sub_basis_id(),
             'dteTourDate': self.viator.get_tour_date(),
             'intTourTimeID': self.viator.get_tour_time_id(),
-            'strPaxFirstName': self.viator.get_first_name(),
+            'strPaxFirstName': 'TEST PLEASE DELETE' if self.mode == 'live' else self.viator.get_first_name(),
             'strPaxLastName': self.viator.get_last_name(),
             'strPaxEmail': self.viator.get_email(),
             'strPaxMobile': self.viator.get_mobile(),

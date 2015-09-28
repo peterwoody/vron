@@ -375,28 +375,28 @@ def test( request ):
     """
 
     # Instantiates FORM
-    response = ''
-    form = TestForm( request.POST or None )
+    form = TestForm( request.POST or None, initial = {
+        'url': settings.BASE_URL + str( reverse( 'connector:api' ) ) + '?config=train'
+    })
 
     # If form was submitted, it tries to submit to API url
     if form.is_valid():
 
+        # Gets posted data
+        url = request.POST['url']
+        xml = request.POST['xml']
+
         # Removes empty spaces between tags
-        xml = strip_spaces_between_tags( request.POST['xml'] )
+        xml = strip_spaces_between_tags( xml )
         xml = re.sub( r'^\s+<','<', xml )
 
         # sends post request to the API url
         headers = { 'Content-Type': 'application/xml' }
-        response = requests.post(
-            settings.BASE_URL + reverse( 'connector:api' ) ,
-            data = xml,
-            headers = headers
-        ).text
+        response = requests.post( url, data = xml, headers = headers ).text
         return HttpResponse( response, content_type = "application/xml" )
 
-
     # Template data
-    context = { 'form': form, 'cancel_url': reverse( 'admin:home' ), 'response': response }
+    context = { 'form': form, 'cancel_url': reverse( 'admin:home' ) }
 
     # Prints Template
     return render( request, 'connector/admin/test/add.html', context )

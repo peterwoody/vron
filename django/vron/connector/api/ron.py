@@ -25,18 +25,23 @@ class Ron( object ):
 
     """
 
-    def __init__( self, config_info ):
+    def __init__( self, config_info, mode = 'train' ):
         """
         Constructor responsible to set class attributes
         and login to the RON server
 
         :param: Dictionary config_info
-        :return: Boolean
+        :param: String mode
+        :return: None
         """
         self.config_info = config_info
         self.host_id = ''
         self.ron_session_id = ''
         self.error_message = ''
+        if mode == 'live':
+            self.url = self.config_info[settings.ID_CONFIG_RON_LIVE_URL]
+        else:
+            self.url = self.config_info[settings.ID_CONFIG_RON_TEST_URL]
 
     def connect( self ):
         """
@@ -44,10 +49,9 @@ class Ron( object ):
 
         :return: Mixed
         """
-        url = self.config_info[settings.ID_CONFIG_RON_TEST_URL]
         if self.ron_session_id:
-            url += '&' + self.ron_session_id
-        return xmlrpc.client.ServerProxy( url )
+            self.url += '&' + self.ron_session_id
+        return xmlrpc.client.ServerProxy( self.url )
 
     def login( self, reseller_id ):
         """

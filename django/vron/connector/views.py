@@ -38,8 +38,14 @@ def api( request ):
     else:
         xml_raw = ''
 
+    # Checks if it's test or live
+    if 'config' in request.GET and request.GET['config'] in ['train', 'live']:
+        config = request.GET['config']
+    else:
+        config = 'train'
+
     # Handles API request
-    api = Api( xml_raw )
+    api = Api( xml_raw, config )
 
     # Returns XML response
-    return HttpResponse( api.process(), content_type = "application/xml" )
+    return HttpResponse( api.process() )
