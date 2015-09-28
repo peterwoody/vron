@@ -115,12 +115,11 @@
                                 <li>
                                     <a href="{% url 'admin:connector:test' %}">Test Request</a>
                                 </li>
+                                {% if perms.connector.admin_view_log %}
                                 <li>
-                                    <a href="#">Availability LOG</a>
+                                    <a href="{% url 'admin:connector:logs' %}">API log</a>
                                 </li>
-                                <li>
-                                    <a href="#">Booking LOG</a>
-                                </li>
+                                {% endif %}
                             </ul>
                         </li>
 

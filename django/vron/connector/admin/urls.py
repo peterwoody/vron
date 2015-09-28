@@ -35,6 +35,12 @@ urlpatterns = patterns('',
     url( r'^keys/details/(?P<key_id>\d+)$', views.key_details, name = 'key_details' ),
     url( r'^keys/edit/(?P<key_id>\d+)$', views.key_edit, name = 'key_edit' ),
     url( r'^keys/delete/(?P<key_id>\d+)$', views.key_delete, name = 'key_delete' ),
+    
+    # Logs
+    url( r'^logs/$', views.log_list, name = 'logs' ),
+    url( r'^logs/json/$', views.log_list_json, name = 'log_json' ),
+    url( r'^logs/details/(?P<log_id>\d+)$', views.log_details, name = 'log_details' ),
+    url( r'^logs/delete/(?P<log_id>\d+)$', views.log_delete, name = 'log_delete' ),
 
     # Test Request
     url( r'^test$', views.test, name = 'test' ),

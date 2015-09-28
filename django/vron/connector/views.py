@@ -48,4 +48,4 @@ def api( request ):
     api = Api( xml_raw, config )
 
     # Returns XML response
-    return HttpResponse( api.process() )
+    return HttpResponse( api.process(), content_type = "application/xml" )

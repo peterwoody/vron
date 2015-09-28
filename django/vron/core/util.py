@@ -66,7 +66,7 @@ def date_difference( start_date, end_date, mode = 'months' ):
     return result
 
 
-def build_datatable_json( request, objects, info ):
+def build_datatable_json( request, objects, info, support = ['edit','delete'] ):
     """
     Generates JSON for the listing (required for the JS plugin www.datatables.net)
 
@@ -118,6 +118,13 @@ def build_datatable_json( request, objects, info ):
     objects = objects[ start : (start+length)]
 
     # build HTML for action buttons (delete, edit, view)
+    edit_html = ''
+    delete_html = ''
+    if 'edit' in support:
+        edit_html = '<li><a href="#edit_link#" class=""><i class="fa fa-edit"></i>Edit Data</a></li>'
+    if 'delete' in support:
+        delete_html = '<li><a href="#" onclick="javascript: confirm_delete( '#delete_link#'); "><i class="fa fa-trash-o"></i>Remove</a></li>'
+
     base_buttons_html = """
                             <div class="btn-group btn-group-xs">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -127,8 +134,8 @@ def build_datatable_json( request, objects, info ):
                                 </button>
                                 <ul class="dropdown-menu left" role="menu">
                                     <li><a href="#details_link#" class=""><i class="fa fa-search"></i>View Details</a></li>
-                                    <li><a href="#edit_link#" class=""><i class="fa fa-edit"></i>Edit Data</a></li>
-                                    <li><a href="#" onclick="javascript: confirm_delete( '#delete_link#'); "><i class="fa fa-trash-o"></i>Remove</a></li>
+                                    """+edit_html+"""
+                                    """+delete_html+"""
                                 </ul>
                             </div>
                         """
@@ -144,15 +151,17 @@ def build_datatable_json( request, objects, info ):
                 value = getattr( sub_obj, split[1] )
                 if 'prepend' in info and split[0] in info['prepend']:
                     value = info['prepend'][split[0]] + value
-                values.append( value )
+                values.append( str( value ) )
             else:
                 value = getattr( obj, field )
                 if 'prepend' in info and field in info['prepend']:
                     value = info['prepend'][field] + value
-                values.append( value )
+                values.append( str( value ) )
         buttons_html = base_buttons_html.replace( "#details_link#", reverse( info['namespace'] + info['url_base_name'] + '_details', args = ( obj.id, ) ) )
-        buttons_html = buttons_html.replace( "#edit_link#", reverse( info['namespace'] + info['url_base_name'] + '_edit', args = ( obj.id, ) ) )
-        buttons_html = buttons_html.replace( "#delete_link#", reverse( info['namespace'] + info['url_base_name'] + '_delete', args = ( obj.id, ) ) )
+        if 'edit' in support:
+            buttons_html = buttons_html.replace( "#edit_link#", reverse( info['namespace'] + info['url_base_name'] + '_edit', args = ( obj.id, ) ) )
+        if 'delete' in support:
+            buttons_html = buttons_html.replace( "#delete_link#", reverse( info['namespace'] + info['url_base_name'] + '_delete', args = ( obj.id, ) ) )
         values.append( buttons_html )
         data.append( values )
 

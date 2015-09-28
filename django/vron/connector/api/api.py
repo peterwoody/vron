@@ -67,7 +67,6 @@ class Api( object ):
 
         :return: XML
         """
-        return self.ron.url
         # If XML is valid, gets root tag name to call appropriate API method
         if self.request_xml.validated:
             tag = self.request_xml.get_tag_name()
@@ -99,23 +98,23 @@ class Api( object ):
 
         :return: XML
         """
-        # Logs request in the background (using celery)
-        self.log_request(
-            settings.ID_LOG_STATUS_RECEIVED,
-            self.viator.get_external_reference()
-        )
+        # Logs request in the background (using celery) and mark it as 'pending'
+        self.log_request( settings.ID_LOG_STATUS_PENDING, self.viator.get_external_reference() )
 
         # Gets all required viator data and checks if any is empty
         booking_empty_check = self.viator.check_booking_data()
         if booking_empty_check != True:
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR001'] )
             return self.viator.booking_response( '', '', 'VRONERR001', booking_empty_check, self.errors['VRONERR001'] )
 
         # Validates api key
         if not self.validate_api_key( self.viator.get_api_key() ):
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR002'] )
             return self.viator.booking_response( '', '', 'VRONERR002', 'ApiKey', self.errors['VRONERR002'] )
 
         # Logs in RON
         if not self.ron.login( self.viator.get_distributor_id() ):
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
             return self.viator.booking_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
         # Get tour pickups in RON
@@ -144,11 +143,17 @@ class Api( object ):
             'intNoPax_FOC': self.viator.get_pax_foc(),
             'intNoPax_UDef1': self.viator.get_pax_udef1(),
             'strPickupKey': self.viator.get_pickup_key( tour_pickups ),
-            'strGeneralComment': 'First tests',
+            'strGeneralComment': self.viator.get_general_comments(),
         }
 
         # Writes booking in RON
         booking_result = self.ron.write_reservation( reservation )
+
+        # Logs response
+        if booking_result:
+            self.log_request( settings.ID_LOG_STATUS_COMPLETE_APPROVED, self.viator.get_external_reference(), '', booking_result )
+        else:
+            self.log_request( settings.ID_LOG_STATUS_COMPLETE_REJECTED, self.viator.get_external_reference(), 'Rejected or Error on RON request' )
 
         # Returnx XML formatted response
         return self.viator.booking_response( booking_result, self.ron.error_message )
@@ -162,17 +167,18 @@ class Api( object ):
         """
         return 'Not supported yet!'
 
-    def log_request( self, log_status_id, external_reference, error_message = None ):
+    def log_request( self, log_status_id, external_reference, error_message = None, confirmation_number = None ):
         """
         Saves request info to the database
 
         :param: log_status_id
         :param: external_reference
         :param: error_message
+        :param: confirmation_number
         :return: Boolean
         """
         # sends to the background with celery
-        log_request.delay( external_reference, log_status_id, error_message )
+        log_request.delay( external_reference, log_status_id, error_message, confirmation_number )
 
     def validate_api_key( self, api_key ):
         """

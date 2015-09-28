@@ -362,6 +362,102 @@ def key_delete( request, key_id ):
 
 
 #######################
+# LOG VIEWS
+#######################
+@restrict_internal_ips
+@permission_required( 'connector.admin_view_log', login_url = 'admin:login' )
+@user_passes_test( admin_check )
+def log_list( request ):
+    """
+    Lists all logs with pagination, order by, search, etc. using www.datatables.net
+
+    :param: request
+    :return: String
+    """
+
+    # Template data
+    context = {}
+
+    # Prints Template
+    return render( request, 'connector/admin/log/list.html', context )
+
+
+@restrict_internal_ips
+@permission_required( 'connector.admin_view_log', login_url = 'admin:login' )
+@user_passes_test( admin_check )
+def log_list_json( request ):
+    """
+    Generates JSON for the listing (required for the JS plugin www.datatables.net)
+
+    :param: request
+    :return: String
+    """
+
+    # Searches DB records
+    objects = Log.get_listing()
+
+    # settings
+    info = {
+        'fields_to_select': [ 'id', 'modified_date', 'external_reference', 'log_status.name' ],
+        'fields_to_search': [ 'id', 'external_reference', 'error_message', 'ron_confirmation_number' ],
+        'default_order_by': 'id',
+        'url_base_name': 'log',
+        'namespace': 'admin:connector:'
+    }
+
+    # Builds json data and return it to the screen
+    json = build_datatable_json( request, objects, info, ['delete'] )
+    return HttpResponse( json )
+
+
+@restrict_internal_ips
+@permission_required( 'connector.admin_view_log', login_url = 'admin:login' )
+@user_passes_test( admin_check )
+def log_details( request, log_id ):
+    """
+    View CONFIG page
+
+    :param: request
+    :param: log_id
+    :return: String
+    """
+
+    # Identifies database record
+    log = get_object_or_404( Log, pk = log_id )
+
+    # Template data
+    context = { 'log': log }
+
+    # Prints Template
+    return render( request, 'connector/admin/log/details.html', context )
+
+
+@restrict_internal_ips
+@permission_required( 'connector.admin_delete_log', login_url = 'admin:login' )
+@user_passes_test( admin_check )
+def log_delete( request, log_id ):
+    """
+    Delete CONFIG action.
+
+    :param: request
+    :param: log_id
+    :return: String
+    """
+    # Identifies database record
+    log = get_object_or_404( Log, pk = log_id )
+
+    # Deletes it
+    log.delete()
+
+    # Redirects with success message
+    messages.success( request, 'Log was successfully deleted.')
+    return HttpResponseRedirect( reverse( 'admin:connector:logs' ) )
+
+
+
+
+
+#######################
 # TEST VIEWS
 #######################
 @restrict_internal_ips

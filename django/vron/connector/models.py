@@ -63,6 +63,7 @@ class Log( BaseModel ):
     external_reference = models.CharField( "external reference", max_length = 40, blank = True, null = True )
     log_status = models.ForeignKey( 'LogStatus' )
     error_message = models.TextField( "error message", blank = True, null = True )
+    ron_confirmation_number = models.IntegerField( "confirmation number", blank = True, null = True )
     attempts = models.IntegerField( "attempts", default = 1 )
 
     # META Options
@@ -72,6 +73,25 @@ class Log( BaseModel ):
             ( "admin_view_request", "ADMIN: Can view logs" ),
         )
 
+    # Class Methods
+    @staticmethod
+    def get_listing():
+        """
+        Query used to search for logs joined with log_status
+
+        :param: provider_id
+        :return: Objects
+        """
+
+        logs = Log.objects.select_related(
+            'log_status'
+        ).only(
+            'id', 'modified_date', 'external_reference', 'log_status__name',
+            'ron_confirmation_number'
+        ).order_by(
+            '-id'
+        )
+        return logs
 
 class LogStatus( BaseModel ):
     """
