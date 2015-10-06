@@ -16,6 +16,7 @@ from vron.core.util import get_object_or_false
 from django.utils.html import strip_spaces_between_tags
 import requests
 import re
+import codecs
 
 
 
@@ -481,10 +482,11 @@ def test( request ):
         # Gets posted data
         url = request.POST['url']
         xml = request.POST['xml']
+        xml = codecs.encode( xml, 'utf-8' )
 
-        # Removes empty spaces between tags
-        xml = strip_spaces_between_tags( xml )
-        xml = re.sub( r'^\s+<','<', xml )
+        # Removes empty spaces between tags and line breaks
+        xml = re.sub( r'>\s+<', '><', xml )
+        xml = re.sub(r"\r?\n?\u2028", "", xml )
 
         # sends post request to the API url
         headers = { 'Content-Type': 'application/xml' }

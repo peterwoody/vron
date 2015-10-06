@@ -6,8 +6,8 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Virtual Machine Box
-  #config.vm.box = "box-cutter/centos67"
-  config.vm.box = "ubuntu/trusty32"
+  config.vm.box = "box-cutter/centos67"
+  #config.vm.box = "ubuntu/trusty32"
 
   config.vm.synced_folder "../", "/vron",
     owner: "vagrant", group: "vron-dev"

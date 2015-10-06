@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 # Imports
 ##########################
 import os
-
+import sys
+sys.path.append('/vron/django')
+sys.path.append('/vron/django/vron')
 
 
 

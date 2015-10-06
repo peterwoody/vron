@@ -58,11 +58,11 @@ INTERNAL_IPS = (
 #########################################
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql.connector.django',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'vron',
         'USER': 'vron',
-        'PASSWORD': '99pUq3PAwFjnBsdZe3',
+        'PASSWORD': 'uhaRYush72ogHau37iO920',
         'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'PORT': '',
     }
 }

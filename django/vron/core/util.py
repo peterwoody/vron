@@ -180,10 +180,7 @@ def build_datatable_json( request, objects, info, support = ['edit', 'delete'] )
     }
 
     #serialize to json
-    s = StringIO()
-    json.dump( response, s )
-    s.seek( 0 )
-    return s.read()
+    return json.dumps( response )
 
 
 def get_object_or_false( klass, *args, **kwargs ):

@@ -178,7 +178,7 @@ class Api( object ):
         :return: Boolean
         """
         # sends to the background with celery
-        log_request.delay( external_reference, log_status_id, error_message, confirmation_number )
+        log_request( external_reference, log_status_id, error_message, confirmation_number )
 
     def validate_api_key( self, api_key ):
         """

@@ -2,7 +2,7 @@
 # Imports
 #################
 from __future__ import absolute_import
-from celery import shared_task
+#from celery import shared_task
 from vron.core.models import User
 from vron.core.mailer import Mailer
 
@@ -13,7 +13,7 @@ from vron.core.mailer import Mailer
 ##########################
 # Celery Tasks
 ##########################
-@shared_task
+#@shared_task
 def send_welcome_email( user, type = 'user' ):
     pass
     """

@@ -106,8 +106,7 @@ class Viator( XmlManager ):
         checks if any is empty or missing
         :return: Mixed (True on success, String tag name on failure)
         """
-        # in python2 use: booking_mapping.iteritems():
-        for field, info in self.booking_mapping.items():
+        for field, info in self.booking_mapping.iteritems():
             if info['required']:
                 value = getattr( self, 'get_' + field )()
                 if value == '' or value is None:
@@ -514,7 +513,7 @@ class Viator( XmlManager ):
                 viator_traveler_map = { 'A': 'Adult', 'C': 'Child', 'Y': 'Youth', 'I': 'Infant', 'S': 'Senior' }
                 traveller_mix = self.request_xml.get_element( 'TravellerMix' )
                 if traveller_mix:
-                    for ( code, tag ) in viator_traveler_map.items():
+                    for ( code, tag ) in viator_traveler_map.iteritems():
                         quantity = self.request_xml.get_element_text( tag, traveller_mix )
                         if quantity:
                             total_pax_per_type[age_band_map[code]] += int( quantity )

@@ -7,7 +7,7 @@ Tasks for the connector app, including celery tasks
 # Imports
 ##########################
 from __future__ import absolute_import
-from celery import shared_task
+#from celery import shared_task
 from django.db.models import F
 from vron.connector.models import Log
 
@@ -18,7 +18,7 @@ from vron.connector.models import Log
 ##########################
 # Celery Tasks
 ##########################
-@shared_task
+#@shared_task
 def log_request( external_reference, log_status_id, error_message, ron_confirmation_number ):
 
     log, created = Log.objects.get_or_create(

@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 ##########################
 from django.utils.translation import ugettext_lazy as _
 import os
-from celery.schedules import crontab
+#from celery.schedules import crontab
 
 
 
@@ -146,7 +146,7 @@ DEFAULT_APPS = (
     'django.contrib.staticfiles'
 )
 THIRD_PARTY_APPS = (
-    'djcelery',
+    # 'djcelery'
 )
 LOCAL_APPS = (
     'vron.core',

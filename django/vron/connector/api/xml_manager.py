@@ -13,6 +13,7 @@ We're using http://lxml.de/
 ##########################
 from lxml import etree, objectify
 from django.utils.html import strip_spaces_between_tags
+import codecs
 import re
 
 
@@ -68,7 +69,8 @@ class XmlManager( object ):
 
         # Removes empty spaces between tags
         xml = strip_spaces_between_tags( xml_raw )
-        xml = re.sub( r'^\s+<', '<', xml )
+        xml = re.sub( r'>\s+<', '><', xml )
+        xml = re.sub(r"\r?\n?\u2028", "", xml )
 
         # Tests if it starts with a tag
         if xml == '' or xml[0] != '<':
@@ -78,7 +80,7 @@ class XmlManager( object ):
         # Tries to parse with lxml
         try:
             parser = etree.XMLParser( remove_blank_text = True )
-            xml_root = etree.fromstring( bytes( xml, 'utf-8' ), parser )
+            xml_root = etree.fromstring( codecs.encode( xml, 'utf-8' ), parser )
             self.xml_root = self.cleanup( xml_root )
             return True
         except etree.XMLSyntaxError as error:

@@ -9,7 +9,7 @@ http://wiki.respax.com.au/respax/ron_api
 # Imports
 ##########################
 from django.conf import settings
-import xmlrpc.client
+import xmlrpclib
 
 
 
@@ -51,7 +51,7 @@ class Ron( object ):
         """
         if self.ron_session_id:
             self.url += '&' + self.ron_session_id
-        return xmlrpc.client.ServerProxy( self.url )
+        return xmlrpclib.ServerProxy( self.url )
 
     def login( self, reseller_id ):
         """
@@ -72,7 +72,7 @@ class Ron( object ):
                 reseller_id
             )
             return True
-        except xmlrpc.client.Fault:
+        except xmlrpclib.Fault:
             return False
 
     def read_tour_pickups( self, tour_code, tour_time_id, basis_id ):
@@ -93,7 +93,7 @@ class Ron( object ):
         try:
             result = ron.readTourPickups( self.host_id, tour_code, tour_time_id, basis_id )
             return result
-        except xmlrpc.client.Fault:
+        except xmlrpclib.Fault:
             return False
 
     def write_reservation( self, reservation ):
@@ -112,6 +112,6 @@ class Ron( object ):
         try:
             result = ron.writeReservation( self.host_id, -1, reservation, { 'strPaymentOption': 'full-agent' }, {} )
             return result
-        except xmlrpc.client.Fault as error:
+        except xmlrpclib.Fault as error:
             self.error_message = error.faultString
             return False
