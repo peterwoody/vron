@@ -17,8 +17,8 @@ from vron._settings.base import *
 #########################################
 # URLs
 #########################################
-BASE_URL = 'http://vron.intertech.com.br'
-BASE_URL_SECURE = 'http://vron.intertech.com.br'
+BASE_URL = 'https://119.148.77.181'
+BASE_URL_SECURE = 'https://119.148.77.181'
 
 
 
