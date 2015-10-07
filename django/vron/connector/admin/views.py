@@ -490,7 +490,12 @@ def test( request ):
 
         # sends post request to the API url
         headers = { 'Content-Type': 'application/xml' }
-        response = requests.post( url, data = xml, headers = headers ).text
+        response = requests.post(
+            url,
+            data = xml,
+            headers = headers,
+            verify = '/etc/httpd/ssl/server.crt'
+        ).text
         return HttpResponse( response, content_type = "application/xml" )
 
     # Template data
