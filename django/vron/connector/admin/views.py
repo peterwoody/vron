@@ -494,7 +494,7 @@ def test( request ):
             url,
             data = xml,
             headers = headers,
-            verify = '/etc/httpd/ssl/server.crt'
+            verify = False #TODO change this to True when certificate is installed
         ).text
         return HttpResponse( response, content_type = "application/xml" )
 
