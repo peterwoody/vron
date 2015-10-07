@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 ##########################
 import os
 import sys
-sys.path.append('/vron/django')
-sys.path.append('/vron/django/vron')
+sys.path.append( '/vron/django' )
+sys.path.append( '/vron/django/vron' )
 
 
 
@@ -22,7 +22,7 @@ sys.path.append('/vron/django/vron')
 ##########################
 
 #SSL
-os.environ[ 'HTTPS' ] = "off"
+os.environ[ 'HTTPS' ] = "on"
 
 # Set the correct settings file to django
 os.environ.setdefault( "DJANGO_SETTINGS_MODULE", 'vron._settings.custom' )
