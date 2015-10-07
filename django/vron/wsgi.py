@@ -14,6 +14,8 @@ import os
 import sys
 sys.path.append( '/vron/django' )
 sys.path.append( '/vron/django/vron' )
+sys.path.append( '/vronvenv/lib/python2.7' )
+sys.path.append( '/vronvenv/lib/python2.7/site-packages' )
 
 
 
