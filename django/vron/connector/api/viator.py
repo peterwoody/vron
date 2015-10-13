@@ -99,6 +99,35 @@ class Viator( XmlManager ):
             'mobile': { 'tag': 'ContactValue', 'required': False },
             'general_comments': { 'tag': '', 'required': False },
         }
+        self.availability_mapping = {
+            'api_key': { 'tag': 'ApiKey', 'required': True },
+            'external_reference': { 'tag': 'ExternalReference', 'required': True },
+            'timestamp': { 'tag': 'Timestamp', 'required': True },
+            'distributor_id': { 'tag': 'ResellerId', 'required': True },
+            'tour_code': { 'tag': 'SupplierProductCode', 'required': True },
+            'tour_date': { 'tag': 'TravelDate', 'required': True },
+            'voucher_number': { 'tag': 'BookingReference', 'required': True },
+            'tour_options': { 'tag': 'TourOptions', 'required': True },
+            'basis_id': { 'tag': 'TourOptions', 'required': True },
+            'sub_basis_id': { 'tag': 'TourOptions', 'required': True },
+            'tour_time_id': { 'tag': 'TourOptions', 'required': True },
+            'pax_adults': { 'tag': 'TourOptions', 'required': True },
+            'pax_infants': { 'tag': 'TourOptions', 'required': True },
+            'pax_child': { 'tag': 'TourOptions', 'required': True },
+            'pax_foc': { 'tag': 'TourOptions', 'required': True },
+            'pax_udef1': { 'tag': 'TourOptions', 'required': True },
+            'default_pickup_key': { 'tag': 'TourOptions', 'required': True },
+            'pickup_key': { 'tag': '', 'required': False },
+            'pickup_point': { 'tag': 'PickupPoint', 'required': True },
+            'lead_traveller': { 'tag': 'Traveller', 'required': True },
+            'first_name': { 'tag': 'GivenName', 'required': True },
+            'last_name': { 'tag': 'SurName', 'required': True },
+            'traveller_identifier': { 'tag': 'TravellerIdentifier', 'required': True },
+            'contact_detail': { 'tag': 'ContactDetail', 'required': False },
+            'email': { 'tag': 'ContactValue', 'required': False },
+            'mobile': { 'tag': 'ContactValue', 'required': False },
+            'general_comments': { 'tag': '', 'required': False },
+        }
 
     def check_booking_data( self ):
         """
@@ -107,6 +136,19 @@ class Viator( XmlManager ):
         :return: Mixed (True on success, String tag name on failure)
         """
         for field, info in self.booking_mapping.iteritems():
+            if info['required']:
+                value = getattr( self, 'get_' + field )()
+                if value == '' or value is None:
+                    return info['tag'] + ' - ' + field
+        return True
+
+    def check_availability_data( self ):
+        """
+        Gets all required viator data for a booking and
+        checks if any is empty or missing
+        :return: Mixed (True on success, String tag name on failure)
+        """
+        for field, info in self.availability_mapping.iteritems():
             if info['required']:
                 value = getattr( self, 'get_' + field )()
                 if value == '' or value is None:
@@ -551,6 +593,7 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'ApiKey', None, self.get_api_key() )
         self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
         self.response_xml.create_element( self.request_xml.get_element( 'SupplierId' ) )
+        self.response_xml.create_element( self.request_xml.get_element( 'ExternalReference' ) )
         now = datetime.datetime.now()
         timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%j+10:00" ) # %z is not being recognized
         self.response_xml.create_element( 'Timestamp', None, timestamp )

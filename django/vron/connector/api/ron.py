@@ -115,3 +115,27 @@ class Ron( object ):
         except xmlrpclib.Fault as error:
             self.error_message = error.faultString
             return False
+
+    def read_tour_availability( self, tour_code, basis_id, sub_basis_id, tour_date, tour_time_id ):
+        """
+        Returns a dictionary containing a single associative array of
+        extended information for the host including contact information.
+
+        :param: String tour_code
+        :param: Int basis_id
+        :param: Int sub_basis_id
+        :param: String tour_date
+        :param: Int tour_time_id
+        :return: Mixed
+        """
+
+        # Creates ron XML-RPC server connection
+        ron = self.connect()
+
+        # Calls ron method
+        try:
+            result = ron.readTourAvailability( self.host_id, tour_code, basis_id, sub_basis_id, tour_date, tour_time_id )
+            return result
+        except xmlrpclib.Fault as error:
+            self.error_message = error.faultString
+            return False

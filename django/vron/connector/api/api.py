@@ -161,11 +161,69 @@ class Api( object ):
     def availability_request( self ):
         """
         Receives a xml request from viator, convert the data for
-        RON requirments and run an availability check in RON
+        RON requirements and run an availability check in RON
 
         :return: Boolean
         """
-        return 'Not supported yet!'
+        # Logs request in the background (using celery) and mark it as 'pending'
+        self.log_request( settings.ID_LOG_STATUS_PENDING, self.viator.get_external_reference() )
+
+        # Gets all required viator data and checks if any is empty
+        booking_empty_check = self.viator.check_availability_data()
+        if booking_empty_check != True:
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR001'] )
+            return self.viator.booking_response( '', '', 'VRONERR001', booking_empty_check, self.errors['VRONERR001'] )
+
+        # Validates api key
+        if not self.validate_api_key( self.viator.get_api_key() ):
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR002'] )
+            return self.viator.booking_response( '', '', 'VRONERR002', 'ApiKey', self.errors['VRONERR002'] )
+
+        # Logs in RON
+        if not self.ron.login( self.viator.get_distributor_id() ):
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
+            return self.viator.booking_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
+
+        # Get tour pickups in RON
+        tour_pickups = self.ron.read_tour_pickups(
+            self.viator.get_tour_code(),
+            self.viator.get_tour_time_id(),
+            self.viator.get_basis_id()
+        )
+
+        # Creates reservation dictionary for RON
+        reservation = {
+            'strCfmNo_Ext': self.viator.get_external_reference(),
+            'strTourCode': self.viator.get_tour_code(),
+            'strVoucherNo': self.viator.get_voucher_number(),
+            'intBasisID': self.viator.get_basis_id(),
+            'intSubBasisID': self.viator.get_sub_basis_id(),
+            'dteTourDate': self.viator.get_tour_date(),
+            'intTourTimeID': self.viator.get_tour_time_id(),
+            'strPaxFirstName': 'TEST PLEASE DELETE' if self.mode == 'live' else self.viator.get_first_name(),
+            'strPaxLastName': self.viator.get_last_name(),
+            'strPaxEmail': self.viator.get_email(),
+            'strPaxMobile': self.viator.get_mobile(),
+            'intNoPax_Adults': self.viator.get_pax_adults(),
+            'intNoPax_Infant': self.viator.get_pax_infants(),
+            'intNoPax_Child': self.viator.get_pax_child(),
+            'intNoPax_FOC': self.viator.get_pax_foc(),
+            'intNoPax_UDef1': self.viator.get_pax_udef1(),
+            'strPickupKey': self.viator.get_pickup_key( tour_pickups ),
+            'strGeneralComment': self.viator.get_general_comments(),
+        }
+
+        # Writes booking in RON
+        booking_result = self.ron.write_reservation( reservation )
+
+        # Logs response
+        if booking_result:
+            self.log_request( settings.ID_LOG_STATUS_COMPLETE_APPROVED, self.viator.get_external_reference(), '', booking_result )
+        else:
+            self.log_request( settings.ID_LOG_STATUS_COMPLETE_REJECTED, self.viator.get_external_reference(), 'Rejected or Error on RON request' )
+
+        # Returnx XML formatted response
+        return self.viator.booking_response( booking_result, self.ron.error_message )
 
     def log_request( self, log_status_id, external_reference, error_message = None, confirmation_number = None ):
         """
