@@ -10,15 +10,15 @@ We put here all functions that couldn't belong to any module or class.
 from functools import reduce
 from django.db.models import Q
 import json
-from io import StringIO
 from django.core.urlresolvers import reverse
 from django.shortcuts import _get_queryset
 from calendar import monthrange
 from datetime import date, datetime, timedelta
-from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponse
 from django.db import models
 from django.db.models.query import QuerySet
+from operator import itemgetter
+
 
 
 
@@ -64,6 +64,30 @@ def date_difference( start_date, end_date, mode = 'months' ):
         result = round( months / 12, 2 )
 
     return result
+
+
+def date_range( start_date, end_date ):
+    """
+    Returns a generator for all dates between an start and end date given
+
+    :param start_date:
+    :param end_date:
+    :return Mixed:
+    """
+    for n in range( int ( ( end_date - start_date ).days ) + 1 ):
+        yield start_date + timedelta( n )
+
+def convert_date_format( date, from_format, to_format ):
+    """
+    Formats a date from a given format to a new one
+
+    :param date:
+    :param from_format:
+    :param to_format:
+    :return Mixed:
+    """
+    date = datetime.strptime( date, from_format )
+    return date.strftime( to_format )
 
 
 def build_datatable_json( request, objects, info, support = ['edit', 'delete'] ):

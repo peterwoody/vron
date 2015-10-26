@@ -14,6 +14,10 @@ from vron.connector.tasks import log_request
 from vron.connector.api.xml_manager import XmlManager
 from vron.connector.api.ron import Ron
 from vron.connector.api.viator import Viator
+from vron.core.util import date_range
+from datetime import timedelta, date
+from operator import itemgetter
+import datetime
 
 
 
@@ -58,6 +62,7 @@ class Api( object ):
             'VRONERR001': 'Malformed or missing elements',
             'VRONERR002': 'Invalid API KEY',
             'VRONERR003': 'RON authentication failed',
+            'VRONERR004': 'Nothing returned',
         }
 
     def process( self ):
@@ -169,61 +174,117 @@ class Api( object ):
         self.log_request( settings.ID_LOG_STATUS_PENDING, self.viator.get_external_reference() )
 
         # Gets all required viator data and checks if any is empty
-        booking_empty_check = self.viator.check_availability_data()
-        if booking_empty_check != True:
+        availability_empty_check = self.viator.check_availability_data()
+        if availability_empty_check != True:
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR001'] )
-            return self.viator.booking_response( '', '', 'VRONERR001', booking_empty_check, self.errors['VRONERR001'] )
+            return self.viator.availability_response( '', '', 'VRONERR001', availability_empty_check, self.errors['VRONERR001'] )
 
         # Validates api key
         if not self.validate_api_key( self.viator.get_api_key() ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR002'] )
-            return self.viator.booking_response( '', '', 'VRONERR002', 'ApiKey', self.errors['VRONERR002'] )
+            return self.viator.availability_response( '', '', 'VRONERR002', 'ApiKey', self.errors['VRONERR002'] )
 
         # Logs in RON
         if not self.ron.login( self.viator.get_distributor_id() ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
-            return self.viator.booking_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
+            return self.viator.availability_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
-        # Get tour pickups in RON
-        tour_pickups = self.ron.read_tour_pickups(
-            self.viator.get_tour_code(),
-            self.viator.get_tour_time_id(),
-            self.viator.get_basis_id()
-        )
 
-        # Creates reservation dictionary for RON
-        reservation = {
-            'strCfmNo_Ext': self.viator.get_external_reference(),
-            'strTourCode': self.viator.get_tour_code(),
-            'strVoucherNo': self.viator.get_voucher_number(),
-            'intBasisID': self.viator.get_basis_id(),
-            'intSubBasisID': self.viator.get_sub_basis_id(),
-            'dteTourDate': self.viator.get_tour_date(),
-            'intTourTimeID': self.viator.get_tour_time_id(),
-            'strPaxFirstName': 'TEST PLEASE DELETE' if self.mode == 'live' else self.viator.get_first_name(),
-            'strPaxLastName': self.viator.get_last_name(),
-            'strPaxEmail': self.viator.get_email(),
-            'strPaxMobile': self.viator.get_mobile(),
-            'intNoPax_Adults': self.viator.get_pax_adults(),
-            'intNoPax_Infant': self.viator.get_pax_infants(),
-            'intNoPax_Child': self.viator.get_pax_child(),
-            'intNoPax_FOC': self.viator.get_pax_foc(),
-            'intNoPax_UDef1': self.viator.get_pax_udef1(),
-            'strPickupKey': self.viator.get_pickup_key( tour_pickups ),
-            'strGeneralComment': self.viator.get_general_comments(),
-        }
+        # Initial settings for query
+        options = []
+        basis_id = self.viator.get_basis_id()
+        start_date = self.viator.get_start_date()
+        end_date = self.viator.get_end_date()
+        tour_code = self.viator.get_tour_code()
+        interval_start_date = ''
+        interval_end_date = ''
 
-        # Writes booking in RON
-        booking_result = self.ron.write_reservation( reservation )
+        # If there's an end date, we need these 2 dates to calculate the interval
+        if end_date:
+            interval_start_date = self.request_xml.get_element_text( 'StartDate' )
+            if interval_start_date:
+                try:
+                    year, month, day = itemgetter( 0, 1, 2) ( interval_start_date.split( '-' ) )
+                    interval_start_date = date( int( year ), int( month ), int( day ) )
+                except ValueError:
+                    interval_start_date = ''
+            interval_end_date = self.request_xml.get_element_text( 'EndDate' )
+            if interval_end_date:
+                try:
+                    year, month, day = itemgetter( 0, 1, 2) ( interval_end_date.split( '-' ) )
+                    interval_end_date = date( int( year ), int( month ), int( day ) )
+                except ValueError:
+                    interval_end_date = ''
+
+        # Determines what product options should be searched
+        if basis_id:
+            base_option = {
+                'strHostID': self.ron.host_id,
+                'strTourCode': tour_code,
+                'intBasisID': basis_id,
+                'intSubBasisID': self.viator.get_sub_basis_id(),
+                'intTourTimeID': self.viator.get_tour_time_id(),
+                'dteTourDate': start_date,
+            }
+            options.append( base_option )
+
+            # if there's and END-DATE here, add all dates in the interval to the options
+            if interval_start_date and interval_end_date:
+                count = 0
+                for single_date in date_range( interval_start_date, interval_end_date ):
+                    if count:
+                        option = {
+                            'strHostID': base_option['strHostID'],
+                            'strTourCode': base_option['strTourCode'],
+                            'intBasisID': base_option['intBasisID'],
+                            'intSubBasisID': base_option['intSubBasisID'],
+                            'intTourTimeID': base_option['intTourTimeID'],
+                            'dteTourDate': single_date.strftime( "%Y-%b-%d" ),
+                        }
+                        options.append( option )
+                    count += 1
+        else:
+
+            # Gets all options for this product
+            tour_times = self.ron.read_tour_times( tour_code )
+            tour_bases = self.ron.read_tour_bases( tour_code )
+            if not tour_times or not tour_bases:
+                self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR004'] )
+                return self.viator.availability_response( '', '', 'VRONERR004', 'SupplierProductCode', self.errors['VRONERR004'] )
+            for tour_time in tour_times:
+                for tour_base in tour_bases:
+                    base_option = {
+                        'strHostID': self.ron.host_id,
+                        'strTourCode': tour_code,
+                        'intBasisID': tour_base['intBasisID'],
+                        'intSubBasisID': tour_base['intSubBasisID'],
+                        'intTourTimeID': tour_time['intTourTimeID'],
+                        'dteTourDate': start_date,
+                    }
+                    options.append( base_option )
+                    if interval_start_date and interval_end_date:
+                        count = 0
+                        for single_date in date_range( interval_start_date, interval_end_date ):
+                            if count:
+                                option = {
+                                    'strHostID': base_option['strHostID'],
+                                    'strTourCode': base_option['strTourCode'],
+                                    'intBasisID': base_option['intBasisID'],
+                                    'intSubBasisID': base_option['intSubBasisID'],
+                                    'intTourTimeID': base_option['intTourTimeID'],
+                                    'dteTourDate': single_date.strftime( "%Y-%b-%d" ),
+                                }
+                                options.append( option )
+                            count += 1
+
+        # Makes availability request in RON
+        availability_results = self.ron.read_tour_availability_range( options )
 
         # Logs response
-        if booking_result:
-            self.log_request( settings.ID_LOG_STATUS_COMPLETE_APPROVED, self.viator.get_external_reference(), '', booking_result )
-        else:
-            self.log_request( settings.ID_LOG_STATUS_COMPLETE_REJECTED, self.viator.get_external_reference(), 'Rejected or Error on RON request' )
+        self.log_request( settings.ID_LOG_STATUS_COMPLETE_APPROVED, self.viator.get_external_reference() )
 
         # Returnx XML formatted response
-        return self.viator.booking_response( booking_result, self.ron.error_message )
+        return self.viator.availability_response( availability_results, self.ron.error_message )
 
     def log_request( self, log_status_id, external_reference, error_message = None, confirmation_number = None ):
         """

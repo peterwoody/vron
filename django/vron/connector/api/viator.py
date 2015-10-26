@@ -9,10 +9,8 @@ http://supplierapitestharness.viatorinc.com/documentation.php
 # Imports
 ##########################
 from vron.connector.api.xml_manager import XmlManager
-from django.conf import settings
-from datetime import date
-from operator import itemgetter
 import datetime
+from vron.core.util import convert_date_format
 
 
 
@@ -68,6 +66,8 @@ class Viator( XmlManager ):
         self.email = ''
         self.mobile = ''
         self.general_comments = ''
+        self.start_date = ''
+        self.end_date = ''
 
         # Viator/RON mapping
         self.booking_mapping = {
@@ -105,28 +105,12 @@ class Viator( XmlManager ):
             'timestamp': { 'tag': 'Timestamp', 'required': True },
             'distributor_id': { 'tag': 'ResellerId', 'required': True },
             'tour_code': { 'tag': 'SupplierProductCode', 'required': True },
-            'tour_date': { 'tag': 'TravelDate', 'required': True },
-            'voucher_number': { 'tag': 'BookingReference', 'required': True },
-            'tour_options': { 'tag': 'TourOptions', 'required': True },
-            'basis_id': { 'tag': 'TourOptions', 'required': True },
-            'sub_basis_id': { 'tag': 'TourOptions', 'required': True },
-            'tour_time_id': { 'tag': 'TourOptions', 'required': True },
-            'pax_adults': { 'tag': 'TourOptions', 'required': True },
-            'pax_infants': { 'tag': 'TourOptions', 'required': True },
-            'pax_child': { 'tag': 'TourOptions', 'required': True },
-            'pax_foc': { 'tag': 'TourOptions', 'required': True },
-            'pax_udef1': { 'tag': 'TourOptions', 'required': True },
-            'default_pickup_key': { 'tag': 'TourOptions', 'required': True },
-            'pickup_key': { 'tag': '', 'required': False },
-            'pickup_point': { 'tag': 'PickupPoint', 'required': True },
-            'lead_traveller': { 'tag': 'Traveller', 'required': True },
-            'first_name': { 'tag': 'GivenName', 'required': True },
-            'last_name': { 'tag': 'SurName', 'required': True },
-            'traveller_identifier': { 'tag': 'TravellerIdentifier', 'required': True },
-            'contact_detail': { 'tag': 'ContactDetail', 'required': False },
-            'email': { 'tag': 'ContactValue', 'required': False },
-            'mobile': { 'tag': 'ContactValue', 'required': False },
-            'general_comments': { 'tag': '', 'required': False },
+            'start_date': { 'tag': 'StartDate', 'required': True },
+            'end_date': { 'tag': 'EndDate', 'required': False },
+            'tour_options': { 'tag': 'TourOptions', 'required': False },
+            'basis_id': { 'tag': 'TourOptions', 'required': False },
+            'sub_basis_id': { 'tag': 'TourOptions', 'required': False },
+            'tour_time_id': { 'tag': 'TourOptions', 'required': False }
         }
 
     def check_booking_data( self ):
@@ -223,10 +207,7 @@ class Viator( XmlManager ):
             tour_date = self.request_xml.get_element_text( self.booking_mapping['tour_date']['tag'] )
             if tour_date:
                 try:
-                    datetime.datetime.strptime( tour_date, '%Y-%m-%d')
-                    year, month, day = itemgetter( 0, 1, 2) ( tour_date.split( '-' ) )
-                    tour_date = date( int( year ), int( month ), int( day ) )
-                    self.tour_date = tour_date.strftime( "%Y-%b-%d" )
+                    self.tour_date = convert_date_format( tour_date, '%Y-%m-%d', '%Y-%b-%d' )
                 except ValueError:
                     self.tour_date = ''
         return self.tour_date
@@ -462,6 +443,36 @@ class Viator( XmlManager ):
                     self.append_to_general_comments( 'remark=' + str( option.text ) )
 
         return self.general_comments
+    
+    def get_start_date( self ):
+        """
+        Returns StartDate converted from
+        'YYYY-MM-DD' to 'DD-MMM-YYYY
+        :return: String
+        """
+        if self.start_date == '':
+            start_date = self.request_xml.get_element_text( self.availability_mapping['start_date']['tag'] )
+            if start_date:
+                try:
+                    self.start_date = convert_date_format( start_date, '%Y-%m-%d', '%Y-%b-%d' )
+                except ValueError:
+                    self.start_date = ''
+        return self.start_date
+    
+    def get_end_date( self ):
+        """
+        Returns EndDate converted from
+        'YYYY-MM-DD' to 'DD-MMM-YYYY
+        :return: String
+        """
+        if self.end_date == '':
+            end_date = self.request_xml.get_element_text( self.availability_mapping['end_date']['tag'] )
+            if end_date:
+                try:
+                    self.end_date = convert_date_format( end_date, '%Y-%m-%d', '%Y-%b-%d' )
+                except ValueError:
+                    self.end_date = ''
+        return self.end_date
 
     def get_lead_traveller( self ):
         """
@@ -599,8 +610,8 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'Timestamp', None, timestamp )
 
         # Copies the custom TourOptions made for RESPAX
-        #tour_options_element = self.request_xml.get_element( 'TourOptions' )
-        #self.response_xml.create_element( tour_options_element )
+        tour_options_element = self.request_xml.get_element( 'TourOptions' )
+        self.response_xml.create_element( tour_options_element )
 
         # Creates elements to identify the Request Status
         request_status_element = self.response_xml.create_element( 'RequestStatus' )
@@ -624,6 +635,66 @@ class Viator( XmlManager ):
         # Creates elements to identify the booking request
         supplier_confirmation = confirmation_number if confirmation_number else ''
         self.response_xml.create_element( 'SupplierConfirmationNumber', None, supplier_confirmation )
+
+        # Returns XML as string
+        return self.response_xml.return_xml_string()
+
+    def availability_response( self, results, transaction_error, request_error_code = None,
+                               request_error_tag = None, request_error_message = None ):
+        """
+        Formats response in XML for VIATOR
+
+        :return: String
+        """
+
+        # Creates root tag to identify it as a Booking Response
+        self.response_xml.create_root_element( 'AvailabilityResponse' )
+
+        # Creates elements to identify the booking request
+        self.response_xml.create_element( self.request_xml.get_element( 'ApiKey' ) )
+        self.response_xml.create_element( self.request_xml.get_element( 'ResellerId' ) )
+        self.response_xml.create_element( self.request_xml.get_element( 'SupplierId' ) )
+        self.response_xml.create_element( self.request_xml.get_element( 'ExternalReference' ) )
+        self.response_xml.create_element( self.request_xml.get_element( 'SupplierProductCode' ) )
+        now = datetime.datetime.now()
+        timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%j+10:00" ) # %z is not being recognized
+        self.response_xml.create_element( 'Timestamp', None, timestamp )
+
+        # Creates elements to identify the Request Status
+        request_status_element = self.response_xml.create_element( 'RequestStatus' )
+        request_status = 'ERROR' if request_error_code else 'SUCCESS'
+        self.response_xml.create_element( 'Status', request_status_element, request_status )
+        if request_status == 'ERROR':
+            request_error_element = self.response_xml.create_element( 'Error', request_status_element )
+            self.response_xml.create_element( 'ErrorCode', request_error_element, request_error_code )
+            self.response_xml.create_element( 'ErrorMessage', request_error_element, request_error_message )
+            self.response_xml.create_element( 'ErrorDetails', request_error_element, 'Error on TAG ' + request_error_tag )
+
+        # Iterates over RON results to build availability response for each prouct option
+        if results:
+            for result in results:
+
+                # creates root element
+                tour_availability = self.response_xml.create_element( 'TourAvailability' )
+
+                # converts date and creates its sub-element
+                tour_date = convert_date_format( result['dteTourDate'], '%Y-%b-%d', '%Y-%m-%d' )
+                self.response_xml.create_element( 'Date', tour_availability, tour_date )
+
+                # creates status element
+                availability_status = self.response_xml.create_element( 'AvailabilityStatus', tour_availability )
+                status = 'AVAILABLE' if result['intAvailability'] > 0 else 'UNAVAILABLE'
+                self.response_xml.create_element( 'Status', availability_status, status )
+                if status == 'UNAVAILABLE':
+                    unavailability_reason = 'SOLD_OUT' if result['boolTrip'] else 'BLOCKED_OUT'
+                    self.response_xml.create_element( 'UnavailabilityReason', availability_status, unavailability_reason )
+
+                # creates tour options element
+                tour_options = self.response_xml.create_element( 'TourOptions', tour_availability )
+                option = self.response_xml.create_element( 'Option', tour_options )
+                self.response_xml.create_element( 'Name', option, 'Basis' )
+                basis_values = "B=" + str( result['intBasisID'] ) + ";S=" + str( result['intSubBasisID'] ) + ";T=" + str( result['intTourTimeID'] )
+                self.response_xml.create_element( 'Value', option, basis_values )
 
         # Returns XML as string
         return self.response_xml.return_xml_string()

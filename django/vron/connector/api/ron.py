@@ -116,17 +116,13 @@ class Ron( object ):
             self.error_message = error.faultString
             return False
 
-    def read_tour_availability( self, tour_code, basis_id, sub_basis_id, tour_date, tour_time_id ):
+    def read_tour_availability_range( self, data ):
         """
-        Returns a dictionary containing a single associative array of
-        extended information for the host including contact information.
+        Returns a dictionary containing availability information for the
+        data required
 
-        :param: String tour_code
-        :param: Int basis_id
-        :param: Int sub_basis_id
-        :param: String tour_date
-        :param: Int tour_time_id
-        :return: Mixed
+        :param: Dictionary data
+        :return: Dictionary
         """
 
         # Creates ron XML-RPC server connection
@@ -134,8 +130,46 @@ class Ron( object ):
 
         # Calls ron method
         try:
-            result = ron.readTourAvailability( self.host_id, tour_code, basis_id, sub_basis_id, tour_date, tour_time_id )
-            return result
+            results = ron.readTourAvailabilityRange( data )
+            return results
+        except xmlrpclib.Fault as error:
+            self.error_message = error.faultString
+            return False
+
+    def read_tour_times( self, tour_code ):
+        """
+        Returns a list of times available for the specified tour_code
+
+        :param: String tour_code
+        :return: Dictionary
+        """
+
+        # Creates ron XML-RPC server connection
+        ron = self.connect()
+
+        # Calls ron method
+        try:
+            results = ron.readTourTimes( self.host_id, tour_code )
+            return results
+        except xmlrpclib.Fault as error:
+            self.error_message = error.faultString
+            return False
+
+    def read_tour_bases( self, tour_code ):
+        """
+        Returns a list of bases available for the specified tour_code
+
+        :param: String tour_code
+        :return: Dictionary
+        """
+
+        # Creates ron XML-RPC server connection
+        ron = self.connect()
+
+        # Calls ron method
+        try:
+            results = ron.readTourBases( self.host_id, tour_code )
+            return results
         except xmlrpclib.Fault as error:
             self.error_message = error.faultString
             return False
