@@ -17,8 +17,8 @@ from vron._settings.base import *
 #########################################
 # URLs
 #########################################
-BASE_URL = 'https://119.148.77.181'
-BASE_URL_SECURE = 'https://119.148.77.181'
+BASE_URL = 'https://vron.respax.com'
+BASE_URL_SECURE = 'https://vron.respax.com'
 
 
 
