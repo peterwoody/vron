@@ -17,6 +17,8 @@ from django.utils.html import strip_spaces_between_tags
 import requests
 import re
 import codecs
+from django.utils.encoding import force_text, force_str
+from django.utils.functional import allow_lazy
 
 
 
@@ -482,11 +484,11 @@ def test( request ):
         # Gets posted data
         url = request.POST['url']
         xml = request.POST['xml']
-        xml = codecs.encode( xml, 'utf-8' )
 
-        # Removes empty spaces between tags and line breaks
+        # Removes empty spaces between tags and line breaks and convert to UTF-8
+        xml = codecs.encode( xml, 'utf-8' )
+        xml = re.sub( r'\r|\n|\t|\b|\v', '', xml )
         xml = re.sub( r'>\s+<', '><', xml )
-        xml = re.sub(r"\r?\n?\u2028", "", xml )
 
         # sends post request to the API url
         headers = { 'Content-Type': 'application/xml' }
