@@ -50,12 +50,12 @@ class Viator( XmlManager ):
         self.basis_id = ''
         self.sub_basis_id = ''
         self.tour_time_id = ''
+        self.parameters = ''
         self.pax_adults = ''
         self.pax_infants = ''
         self.pax_child = ''
         self.pax_foc = ''
         self.pax_udef1 = ''
-        self.default_pickup_key = ''
         self.pickup_key = ''
         self.pickup_point = ''
         self.lead_traveller = ''
@@ -82,12 +82,12 @@ class Viator( XmlManager ):
             'basis_id': { 'tag': 'TourOptions', 'required': True },
             'sub_basis_id': { 'tag': 'TourOptions', 'required': True },
             'tour_time_id': { 'tag': 'TourOptions', 'required': True },
+            'parameters': { 'tag': 'Parameter', 'required': True },
             'pax_adults': { 'tag': 'TourOptions', 'required': True },
             'pax_infants': { 'tag': 'TourOptions', 'required': True },
             'pax_child': { 'tag': 'TourOptions', 'required': True },
             'pax_foc': { 'tag': 'TourOptions', 'required': True },
             'pax_udef1': { 'tag': 'TourOptions', 'required': True },
-            'default_pickup_key': { 'tag': 'TourOptions', 'required': True },
             'pickup_key': { 'tag': '', 'required': False },
             'pickup_point': { 'tag': 'PickupPoint', 'required': True },
             'lead_traveller': { 'tag': 'Traveller', 'required': True },
@@ -97,7 +97,7 @@ class Viator( XmlManager ):
             'contact_detail': { 'tag': 'ContactDetail', 'required': False },
             'email': { 'tag': 'ContactValue', 'required': False },
             'mobile': { 'tag': 'ContactValue', 'required': False },
-            'general_comments': { 'tag': '', 'required': False },
+            'general_comments': { 'tag': '', 'required': False }
         }
         self.availability_mapping = {
             'api_key': { 'tag': 'ApiKey', 'required': True },
@@ -110,7 +110,8 @@ class Viator( XmlManager ):
             'tour_options': { 'tag': 'TourOptions', 'required': False },
             'basis_id': { 'tag': 'TourOptions', 'required': False },
             'sub_basis_id': { 'tag': 'TourOptions', 'required': False },
-            'tour_time_id': { 'tag': 'TourOptions', 'required': False }
+            'tour_time_id': { 'tag': 'TourOptions', 'required': False },
+            'parameters': { 'tag': 'Parameter', 'required': True }
         }
 
     def check_booking_data( self ):
@@ -245,7 +246,7 @@ class Viator( XmlManager ):
         :return: String
         """
         if self.pax_adults == '':
-            self.get_tour_options()
+            self.get_parameters()
         return self.pax_adults
 
     def get_pax_infants( self ):
@@ -254,7 +255,7 @@ class Viator( XmlManager ):
         :return: String
         """
         if self.pax_infants == '':
-            self.get_tour_options()
+            self.get_parameters()
         return self.pax_infants
 
     def get_pax_child( self ):
@@ -263,7 +264,7 @@ class Viator( XmlManager ):
         :return: String
         """
         if self.pax_child == '':
-            self.get_tour_options()
+            self.get_parameters()
         return self.pax_child
 
     def get_pax_foc( self ):
@@ -272,7 +273,7 @@ class Viator( XmlManager ):
         :return: String
         """
         if self.pax_foc == '':
-            self.get_tour_options()
+            self.get_parameters()
         return self.pax_foc
 
     def get_pax_udef1( self ):
@@ -281,17 +282,8 @@ class Viator( XmlManager ):
         :return: String
         """
         if self.pax_udef1 == '':
-            self.get_tour_options()
+            self.get_parameters()
         return self.pax_udef1
-
-    def get_default_pickup_key( self ):
-        """
-        Gets default_pickup_key out of tour options
-        :return: String
-        """
-        if self.default_pickup_key == '':
-            self.get_tour_options()
-        return self.default_pickup_key
 
     def get_pickup_point( self ):
         """
@@ -307,12 +299,13 @@ class Viator( XmlManager ):
         :return: String
         """
         if self.pickup_key == '':
-            self.pickup_key = self.get_default_pickup_key()
             pickup_point = self.get_pickup_point()
             if pickup_point:
                 found = False
                 if tour_pickups and len( tour_pickups ) > 0 :
                     for pickup in tour_pickups:
+                        if self.pickup_key == "": # If no match is made, we default the value to the first of the list
+                            self.pickup_key = pickup['strPickupKey']
                         if pickup_point == pickup['strPickupName']:
                             self.pickup_key = pickup['strPickupKey']
                             found = True
@@ -443,7 +436,7 @@ class Viator( XmlManager ):
                     self.append_to_general_comments( 'remark=' + str( option.text ) )
 
         return self.general_comments
-    
+
     def get_start_date( self ):
         """
         Returns StartDate converted from
@@ -458,7 +451,7 @@ class Viator( XmlManager ):
                 except ValueError:
                     self.start_date = ''
         return self.start_date
-    
+
     def get_end_date( self ):
         """
         Returns EndDate converted from
@@ -491,6 +484,22 @@ class Viator( XmlManager ):
                         self.traveller_identifier = self.request_xml.get_element_text( 'TravellerIdentifier', traveller )
         return self.lead_traveller
 
+    def get_parameters( self ):
+        """
+        Returns Parameter tags from root xml and calls respective
+        methods
+        :return: String
+        """
+        if self.parameters == '':
+            self.parameters = self.request_xml.get_element_list( self.booking_mapping['parameters']['tag'] )
+            if self.parameters:
+                for parameter in self.parameters:
+                    name = self.request_xml.get_element_text( 'Name', parameter )
+                    value = self.request_xml.get_element_text( 'Value', parameter )
+                    if name == "AgeBandMap":
+                        self.get_age_band_values( value )
+        return self.parameters
+
     def get_tour_options( self ):
         """
         Returns TourOptions tag from root xml
@@ -507,10 +516,6 @@ class Viator( XmlManager ):
                     if name and value:
                         if name == 'Basis':
                             self.get_basis_values( value )
-                        elif name == 'AgeBandMap':
-                            self.get_age_band_values( value )
-                        elif name == 'DefaultPickup':
-                            self.default_pickup_key = value
         return self.tour_options
 
     def get_basis_values( self, content ):
@@ -608,6 +613,7 @@ class Viator( XmlManager ):
         now = datetime.datetime.now()
         timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%j+10:00" ) # %z is not being recognized
         self.response_xml.create_element( 'Timestamp', None, timestamp )
+        self.response_xml.create_element( self.request_xml.get_element( 'Parameter' ) )
 
         # Copies the custom TourOptions made for RESPAX
         tour_options_element = self.request_xml.get_element( 'TourOptions' )
@@ -659,6 +665,7 @@ class Viator( XmlManager ):
         now = datetime.datetime.now()
         timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%j+10:00" ) # %z is not being recognized
         self.response_xml.create_element( 'Timestamp', None, timestamp )
+        self.response_xml.create_element( self.request_xml.get_element( 'Parameter' ) )
 
         # Creates elements to identify the Request Status
         request_status_element = self.response_xml.create_element( 'RequestStatus' )
