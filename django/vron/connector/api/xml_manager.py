@@ -67,10 +67,9 @@ class XmlManager( object ):
             url_encoded = xml_raw.split( '=', 1 )
             xml_raw = url_encoded[1]
 
-        # Removes empty spaces between tags
-        xml = strip_spaces_between_tags( xml_raw )
-        xml = re.sub( r'>\s+<', '><', xml )
-        xml = re.sub(r"\r?\n?\u2028", "", xml )
+        # Removes empty lines and spaces between tags
+        xml = re.sub( r'\r|\n|\t|\b|\v', '', xml_raw )
+        xml = strip_spaces_between_tags( xml )
 
         # Tests if it starts with a tag
         if xml == '' or xml[0] != '<':

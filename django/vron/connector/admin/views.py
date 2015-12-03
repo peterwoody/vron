@@ -488,7 +488,7 @@ def test( request ):
         # Removes empty spaces between tags and line breaks and convert to UTF-8
         xml = codecs.encode( xml, 'utf-8' )
         xml = re.sub( r'\r|\n|\t|\b|\v', '', xml )
-        xml = re.sub( r'>\s+<', '><', xml )
+        xml = strip_spaces_between_tags( xml )
 
         # sends post request to the API url
         headers = { 'Content-Type': 'application/xml' }
