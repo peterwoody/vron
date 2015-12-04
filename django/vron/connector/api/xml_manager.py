@@ -230,4 +230,4 @@ class XmlManager( object ):
         """
         if element is None:
             element = self.xml_root
-        return etree.tostring( element, pretty_print = True, xml_declaration = True, encoding = 'UTF-8' )
+        return etree.tostring( element, xml_declaration = True, encoding = 'UTF-8' )
