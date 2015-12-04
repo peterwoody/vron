@@ -119,6 +119,14 @@ class Viator( XmlManager ):
             'parameters': { 'tag': 'Parameter', 'required': True },
             'age_band_map': { 'tag': 'Parameter', 'required': True }
         }
+        self.tour_list_mapping = {
+            'api_key': { 'tag': 'ApiKey', 'required': True },
+            'external_reference': { 'tag': 'ExternalReference', 'required': True },
+            'timestamp': { 'tag': 'Timestamp', 'required': True },
+            'distributor_id': { 'tag': 'ResellerId', 'required': True },
+            'parameters': { 'tag': 'Parameter', 'required': True },
+            'age_band_map': { 'tag': 'Parameter', 'required': True }
+        }
 
     def check_booking_data( self ):
         """
@@ -135,11 +143,24 @@ class Viator( XmlManager ):
 
     def check_availability_data( self ):
         """
-        Gets all required viator data for a booking and
+        Gets all required viator data for availability and
         checks if any is empty or missing
         :return: Mixed (True on success, String tag name on failure)
         """
         for field, info in self.availability_mapping.iteritems():
+            if info['required']:
+                value = getattr( self, 'get_' + field )()
+                if value == '' or value is None:
+                    return info['tag'] + ' - ' + field
+        return True
+
+    def check_tour_list_data( self ):
+        """
+        Gets all required viator data for tour list and
+        checks if any is empty or missing
+        :return: Mixed (True on success, String tag name on failure)
+        """
+        for field, info in self.tour_list_mapping.iteritems():
             if info['required']:
                 value = getattr( self, 'get_' + field )()
                 if value == '' or value is None:
@@ -690,7 +711,7 @@ class Viator( XmlManager ):
         :return: String
         """
 
-        # Creates root tag to identify it as a Booking Response
+        # Creates root tag to identify it as an Availability Response
         self.response_xml.create_root_element( 'AvailabilityResponse' )
 
         # Creates elements to identify the  request
@@ -721,7 +742,7 @@ class Viator( XmlManager ):
 
         # Creates element for SUPPLIER PRODUCT CODE (TOUR CODE)
         self.response_xml.create_element( 'SupplierProductCode', None, self.get_tour_code() )
-        
+
         # Iterates over RON results to build availability response for each prouct option
         if results:
             for result in results:
@@ -747,6 +768,73 @@ class Viator( XmlManager ):
                 self.response_xml.create_element( 'Name', option, 'Basis' )
                 basis_values = "B=" + str( result['intBasisID'] ) + ";S=" + str( result['intSubBasisID'] ) + ";T=" + str( result['intTourTimeID'] )
                 self.response_xml.create_element( 'Value', option, basis_values )
+
+        # Returns XML as string
+        return self.response_xml.return_xml_string()
+
+    def tour_list_response( self, tour_list, transaction_error, request_error_code = None,
+                               request_error_tag = None, request_error_message = None ):
+        """
+        Formats response in XML for VIATOR
+
+        :return: String
+        """
+
+        # Creates root tag to identify it as a Tour List Response
+        self.response_xml.create_root_element( 'TourListResponse' )
+
+        # Creates elements to identify the  request
+        self.response_xml.create_element( 'ApiKey', None, self.get_api_key() )
+        self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
+        self.response_xml.create_element( 'SupplierId', None, self.request_xml.get_element_text( 'SupplierId' ) )
+        self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
+
+        # Creates element for TIMESTAMP
+        now = datetime.datetime.now()
+        timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%j+10:00" ) # %z is not being recognized
+        self.response_xml.create_element( 'Timestamp', None, timestamp )
+
+        # Creates element for PARAMETER
+        parameter_element = self.response_xml.create_element( 'Parameter' )
+        self.response_xml.create_element( 'Name', parameter_element, 'AgeBandMap' )
+        self.response_xml.create_element( 'Value', parameter_element, self.get_age_band_map() )
+
+        # Creates elements to identify the Request Status
+        request_status_element = self.response_xml.create_element( 'RequestStatus' )
+        request_status = 'ERROR' if request_error_code else 'SUCCESS'
+        self.response_xml.create_element( 'Status', request_status_element, request_status )
+        if request_status == 'ERROR':
+            request_error_element = self.response_xml.create_element( 'Error', request_status_element )
+            self.response_xml.create_element( 'ErrorCode', request_error_element, request_error_code )
+            self.response_xml.create_element( 'ErrorMessage', request_error_element, request_error_message )
+            self.response_xml.create_element( 'ErrorDetails', request_error_element, 'Error on TAG ' + request_error_tag )
+
+        # Iterates over RON results to build tour list response for each tour option
+        if tour_list:
+            for tour in tour_list:
+
+                # creates tour root element
+                tour_element = self.response_xml.create_element( 'Tour' )
+
+                # creates main tour information elements
+                self.response_xml.create_element( 'SupplierProductCode', tour_element, tour['tour']['tour_code'] )
+                self.response_xml.create_element( 'SupplierProductName', tour_element, tour['tour']['tour_name'] )
+                self.response_xml.create_element( 'CountryCode', tour_element, tour['tour']['country_code'] )
+                self.response_xml.create_element( 'DestinationCode', tour_element, tour['tour']['destination_code'] )
+                self.response_xml.create_element( 'DestinationName', tour_element, tour['tour']['destination_name'] )
+                self.response_xml.create_element( 'TourDescription', tour_element, tour['tour']['tour_description'] )
+
+                # creates tour options elements
+                tour_options_element = self.response_xml.create_element( 'TourOptions', tour_element )
+                if tour['options']:
+                    for option in tour['options']:
+                        self.response_xml.create_element( 'SupplierOptionCode', tour_options_element, option['option_code'] )
+                        self.response_xml.create_element( 'SupplierOptionName', tour_options_element, option['option_name'] )
+                        self.response_xml.create_element( 'TourDepartureTime', tour_options_element, option['departure_time'] )
+                        option_element = self.response_xml.create_element( 'Option', tour_options_element )
+                        self.response_xml.create_element( 'Name', option_element, 'Basis' )
+                        basis_values = "B=" + str( option['basis_id'] ) + ";S=" + str( option['sub_basis_id'] ) + ";T=" + str( option['tour_time_id'] )
+                        self.response_xml.create_element( 'Value', option_element, basis_values )
 
         # Returns XML as string
         return self.response_xml.return_xml_string()

@@ -18,6 +18,7 @@ from vron.core.util import date_range
 from datetime import timedelta, date
 from operator import itemgetter
 import datetime
+import codecs
 
 
 
@@ -79,6 +80,8 @@ class Api( object ):
                 return self.booking_request()
             elif 'AvailabilityRequest' in tag:
                 return self.availability_request()
+            elif 'TourListRequest' in tag:
+                return self.tour_list_request()
             else:
                 return self.basic_error_response( 'Request not supported - ' + tag )
         else:
@@ -285,6 +288,90 @@ class Api( object ):
 
         # Returnx XML formatted response
         return self.viator.availability_response( availability_results, self.ron.error_message )
+
+    def tour_list_request( self ):
+        """
+        Receives a xml request from viator, convert the data for
+        RON requirements and run an tour list request in RON
+
+        :return: Boolean
+        """
+        # Logs request in the background (using celery) and mark it as 'pending'
+        self.log_request( settings.ID_LOG_STATUS_PENDING, self.viator.get_external_reference() )
+
+        # Gets all required viator data and checks if any is empty
+        tour_list_empty_check = self.viator.check_tour_list_data()
+        if tour_list_empty_check != True:
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR001'] )
+            return self.viator.availability_response( '', '', 'VRONERR001', tour_list_empty_check, self.errors['VRONERR001'] )
+
+        # Validates api key
+        if not self.validate_api_key( self.viator.get_api_key() ):
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR002'] )
+            return self.viator.availability_response( '', '', 'VRONERR002', 'ApiKey', self.errors['VRONERR002'] )
+
+        # Logs in RON
+        if not self.ron.login( self.viator.get_distributor_id() ):
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
+            return self.viator.availability_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
+
+
+        # Initial settings for the query
+        tour_list = []
+
+        # Gets a list of tours for this host/reseller
+        tours = self.ron.read_tours()
+        if not tours:
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR004'] )
+            return self.viator.availability_response( '', '', 'VRONERR004', 'SupplierProductCode', self.errors['VRONERR004'] )
+        for tour in tours:
+
+            # Reads data from this tour
+            tour_info = {}
+            tour_code = tour['strTourCode']
+            tour_name = tour['strTourName']
+
+            # Gets all options for this tour
+            tour_times = self.ron.read_tour_times( tour_code )
+            tour_bases = self.ron.read_tour_bases( tour_code )
+            tour_web_details = self.ron.read_tour_web_details( tour_code )
+            if tour_times and tour_bases and tour_web_details:
+
+                # Stores relevant information from this tour (required for viator response later)
+                tour_info['tour'] = {
+                    'tour_code': tour_code,
+                    'tour_name': tour_name,
+                    'country_code': '',
+                    'destination_code': '',
+                    'destination_name': '',
+                    'tour_description': tour_web_details['strCatchPhrase'].encode( 'ascii', 'ignore' )
+                }
+                tour_info['options'] = []
+
+                # Captures tour options to be stored too
+                for tour_time in tour_times:
+                    for tour_base in tour_bases:
+                        option = {
+                            'option_code': tour_base['intBasisID'],
+                            'option_name': tour_base['strBasisDesc'],
+                            'departure_time': tour_time['dteTourTime']['iso8601'],
+                            'basis_id': tour_base['intBasisID'],
+                            'sub_basis_id': tour_base['intSubBasisID'],
+                            'tour_time_id': tour_time['intTourTimeID'],
+                        }
+                        tour_info['options'].append( option )
+                tour_list.append( tour_info )
+
+        # Nothing found
+        if len( tour_list ) == 0:
+            self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR004'] )
+            return self.viator.availability_response( '', '', 'VRONERR004', 'SupplierProductCode', self.errors['VRONERR004'] )
+
+        # Logs response
+        self.log_request( settings.ID_LOG_STATUS_COMPLETE_APPROVED, self.viator.get_external_reference() )
+
+        # Returnx XML formatted response
+        return self.viator.tour_list_response( tour_list, self.ron.error_message )
 
     def log_request( self, log_status_id, external_reference, error_message = None, confirmation_number = None ):
         """

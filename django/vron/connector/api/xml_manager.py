@@ -14,6 +14,7 @@ We're using http://lxml.de/
 from lxml import etree, objectify
 from django.utils.html import strip_spaces_between_tags
 import codecs
+from django.utils.encoding import force_text, force_str
 import re
 
 
@@ -83,7 +84,7 @@ class XmlManager( object ):
             self.xml_root = self.cleanup( xml_root )
             return True
         except etree.XMLSyntaxError as error:
-            self.error_message = "Malformed xml (" + str( error ) + ")"
+            self.error_message = "Malformed xml (" + force_str( error ) + ")"
             return False
 
     def cleanup( self, xml_root ):
@@ -171,7 +172,7 @@ class XmlManager( object ):
             else:
                 element = etree.SubElement( base_element, element )
                 if text:
-                    element.text = str( text )
+                    element.text = force_str( text )
             return element
         return None
 

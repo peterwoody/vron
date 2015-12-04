@@ -91,8 +91,7 @@ class Ron( object ):
 
         # Calls ron method
         try:
-            result = ron.readTourPickups( self.host_id, tour_code, tour_time_id, basis_id )
-            return result
+            return ron.readTourPickups( self.host_id, tour_code, tour_time_id, basis_id )
         except xmlrpclib.Fault:
             return False
 
@@ -110,8 +109,7 @@ class Ron( object ):
 
         # Calls ron method
         try:
-            result = ron.writeReservation( self.host_id, -1, reservation, { 'strPaymentOption': 'full-agent' }, {} )
-            return result
+            return ron.writeReservation( self.host_id, -1, reservation, { 'strPaymentOption': 'full-agent' }, {} )
         except xmlrpclib.Fault as error:
             self.error_message = error.faultString
             return False
@@ -130,8 +128,7 @@ class Ron( object ):
 
         # Calls ron method
         try:
-            results = ron.readTourAvailabilityRange( data )
-            return results
+            return ron.readTourAvailabilityRange( data )
         except xmlrpclib.Fault as error:
             self.error_message = error.faultString
             return False
@@ -149,8 +146,25 @@ class Ron( object ):
 
         # Calls ron method
         try:
-            results = ron.readTourTimes( self.host_id, tour_code )
-            return results
+            return ron.readTourTimes( self.host_id, tour_code )
+        except xmlrpclib.Fault as error:
+            self.error_message = error.faultString
+            return False
+
+    def read_tours( self ):
+        """
+        Returns an array of associative arrays each containing the tour code and tour
+        name for all the publicly visible tours from the specified host.
+
+        :return: Dictionary
+        """
+
+        # Creates ron XML-RPC server connection
+        ron = self.connect()
+
+        # Calls ron method
+        try:
+            return ron.readTours( self.host_id )
         except xmlrpclib.Fault as error:
             self.error_message = error.faultString
             return False
@@ -168,8 +182,28 @@ class Ron( object ):
 
         # Calls ron method
         try:
-            results = ron.readTourBases( self.host_id, tour_code )
-            return results
+            return ron.readTourBases( self.host_id, tour_code )
         except xmlrpclib.Fault as error:
             self.error_message = error.faultString
             return False
+
+    def read_tour_web_details( self, tour_code ):
+        """
+        Returns an associative array of promotional and descriptive information for the tour.
+        Due to the size of base 64 encoded images, you can optionally request that image information not
+        be returned by sending false as the third parameter.
+
+        :param: String tour_code
+        :return: Dictionary
+        """
+
+        # Creates ron XML-RPC server connection
+        ron = self.connect()
+
+        # Calls ron method
+        try:
+            return ron.readTourWebDetails( self.host_id, tour_code, False )
+        except xmlrpclib.Fault as error:
+            self.error_message = error.faultString
+            return False
+
