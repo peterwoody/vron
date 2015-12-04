@@ -828,13 +828,19 @@ class Viator( XmlManager ):
                 tour_options_element = self.response_xml.create_element( 'TourOption', tour_element )
                 if tour['options']:
                     for option in tour['options']:
+                        # Basic option info
                         self.response_xml.create_element( 'SupplierOptionCode', tour_options_element, option['option_code'] )
                         self.response_xml.create_element( 'SupplierOptionName', tour_options_element, option['option_name'] )
                         self.response_xml.create_element( 'TourDepartureTime', tour_options_element, option['departure_time'] )
+                        # Basis Info
                         option_element = self.response_xml.create_element( 'Option', tour_options_element )
                         self.response_xml.create_element( 'Name', option_element, 'Basis' )
                         basis_values = "B=" + str( option['basis_id'] ) + ";S=" + str( option['sub_basis_id'] ) + ";T=" + str( option['tour_time_id'] )
                         self.response_xml.create_element( 'Value', option_element, basis_values )
+                        # Language Info
+                        language_element = self.response_xml.create_element( 'Language', tour_options_element )
+                        self.response_xml.create_element( 'LanguageCode', language_element, 'EN' )
+                        self.response_xml.create_element( 'LanguageOption', language_element, 'GUIDE' )
 
         # Returns XML as string
         return self.response_xml.return_xml_string()
