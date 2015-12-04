@@ -647,10 +647,12 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'Value', parameter_element, self.get_age_band_map() )
 
         # Creates TourOptions made for RESPAX
+        """ At the moment test harness say we can't return this
         tour_options_element = self.response_xml.create_element( 'TourOptions' )
         option_element = self.response_xml.create_element( 'Option', tour_options_element )
         self.response_xml.create_element( 'Name', option_element, 'Basis' )
         self.response_xml.create_element( 'Value', option_element, self.get_basis() )
+        """
 
         # Creates elements to identify the Request Status
         request_status_element = self.response_xml.create_element( 'RequestStatus' )
