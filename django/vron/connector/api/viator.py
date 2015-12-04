@@ -825,7 +825,7 @@ class Viator( XmlManager ):
                 self.response_xml.create_element( 'TourDescription', tour_element, tour['tour']['tour_description'] )
 
                 # creates tour options elements
-                tour_options_element = self.response_xml.create_element( 'TourOptions', tour_element )
+                tour_options_element = self.response_xml.create_element( 'TourOption', tour_element )
                 if tour['options']:
                     for option in tour['options']:
                         self.response_xml.create_element( 'SupplierOptionCode', tour_options_element, option['option_code'] )
