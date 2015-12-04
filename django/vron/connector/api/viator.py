@@ -642,6 +642,8 @@ class Viator( XmlManager ):
         now = datetime.datetime.now()
         timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%j+10:00" ) # %z is not being recognized
         self.response_xml.create_element( 'Timestamp', None, timestamp )
+
+        # Creates element for PARAMETER
         parameter_element = self.response_xml.create_element( 'Parameter' )
         self.response_xml.create_element( 'Name', parameter_element, 'AgeBandMap' )
         self.response_xml.create_element( 'Value', parameter_element, self.get_age_band_map() )
@@ -696,13 +698,16 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
         self.response_xml.create_element( 'SupplierId', None, self.request_xml.get_element_text( 'SupplierId' ) )
         self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
-        self.response_xml.create_element( 'SupplierProductCode', None, self.get_tour_code() )
 
         # Creates element for TIMESTAMP
         now = datetime.datetime.now()
         timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%j+10:00" ) # %z is not being recognized
         self.response_xml.create_element( 'Timestamp', None, timestamp )
-        self.response_xml.create_element( self.request_xml.get_element( 'Parameter' ) )
+
+        # Creates element for PARAMETER
+        parameter_element = self.response_xml.create_element( 'Parameter' )
+        self.response_xml.create_element( 'Name', parameter_element, 'AgeBandMap' )
+        self.response_xml.create_element( 'Value', parameter_element, self.get_age_band_map() )
 
         # Creates elements to identify the Request Status
         request_status_element = self.response_xml.create_element( 'RequestStatus' )
@@ -714,6 +719,9 @@ class Viator( XmlManager ):
             self.response_xml.create_element( 'ErrorMessage', request_error_element, request_error_message )
             self.response_xml.create_element( 'ErrorDetails', request_error_element, 'Error on TAG ' + request_error_tag )
 
+        # Creates element for SUPPLIER PRODUCT CODE (TOUR CODE)
+        self.response_xml.create_element( 'SupplierProductCode', None, self.get_tour_code() )
+        
         # Iterates over RON results to build availability response for each prouct option
         if results:
             for result in results:
