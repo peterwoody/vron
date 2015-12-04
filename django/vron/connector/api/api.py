@@ -341,9 +341,9 @@ class Api( object ):
                 tour_info['tour'] = {
                     'tour_code': tour_code,
                     'tour_name': tour_name,
-                    'country_code': '',
-                    'destination_code': '',
-                    'destination_name': '',
+                    'country_code': 'AU', #TODO get this from RON
+                    'destination_code': 'CNS', #TODO get this from RON
+                    'destination_name': 'Cairns', #TODO get this from RON
                     'tour_description': tour_web_details['strCatchPhrase'].encode( 'ascii', 'ignore' )
                 }
                 tour_info['options'] = []
