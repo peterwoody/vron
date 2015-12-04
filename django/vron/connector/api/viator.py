@@ -50,7 +50,9 @@ class Viator( XmlManager ):
         self.basis_id = ''
         self.sub_basis_id = ''
         self.tour_time_id = ''
+        self.basis = ''
         self.parameters = ''
+        self.age_band_map = ''
         self.pax_adults = ''
         self.pax_infants = ''
         self.pax_child = ''
@@ -82,7 +84,9 @@ class Viator( XmlManager ):
             'basis_id': { 'tag': 'TourOptions', 'required': True },
             'sub_basis_id': { 'tag': 'TourOptions', 'required': True },
             'tour_time_id': { 'tag': 'TourOptions', 'required': True },
+            'basis': { 'tag': 'TourOptions', 'required': True },
             'parameters': { 'tag': 'Parameter', 'required': True },
+            'age_band_map': { 'tag': 'Parameter', 'required': True },
             'pax_adults': { 'tag': 'TourOptions', 'required': True },
             'pax_infants': { 'tag': 'TourOptions', 'required': True },
             'pax_child': { 'tag': 'TourOptions', 'required': True },
@@ -111,7 +115,9 @@ class Viator( XmlManager ):
             'basis_id': { 'tag': 'TourOptions', 'required': False },
             'sub_basis_id': { 'tag': 'TourOptions', 'required': False },
             'tour_time_id': { 'tag': 'TourOptions', 'required': False },
-            'parameters': { 'tag': 'Parameter', 'required': True }
+            'basis': { 'tag': 'TourOptions', 'required': False },
+            'parameters': { 'tag': 'Parameter', 'required': True },
+            'age_band_map': { 'tag': 'Parameter', 'required': True }
         }
 
     def check_booking_data( self ):
@@ -240,6 +246,15 @@ class Viator( XmlManager ):
             self.get_tour_options()
         return self.tour_time_id
 
+    def get_basis( self ):
+        """
+        Gets Basis string
+        :return: String
+        """
+        if self.basis == '':
+            self.get_tour_options()
+        return self.basis
+
     def get_pax_adults( self ):
         """
         Gets pax_adults out of tour options
@@ -284,6 +299,15 @@ class Viator( XmlManager ):
         if self.pax_udef1 == '':
             self.get_parameters()
         return self.pax_udef1
+
+    def get_age_band_map( self ):
+        """
+        Gets AgeBandMap string
+        :return: String
+        """
+        if self.age_band_map == '':
+            self.get_parameters()
+        return self.age_band_map
 
     def get_pickup_point( self ):
         """
@@ -497,7 +521,8 @@ class Viator( XmlManager ):
                     name = self.request_xml.get_element_text( 'Name', parameter )
                     value = self.request_xml.get_element_text( 'Value', parameter )
                     if name == "AgeBandMap":
-                        self.get_age_band_values( value )
+                        self.age_band_map = value
+                        self.get_age_band_values()
         return self.parameters
 
     def get_tour_options( self ):
@@ -515,10 +540,11 @@ class Viator( XmlManager ):
                     value = self.request_xml.get_element_text( 'Value', option )
                     if name and value:
                         if name == 'Basis':
-                            self.get_basis_values( value )
+                            self.basis = value
+                            self.get_basis_values()
         return self.tour_options
 
-    def get_basis_values( self, content ):
+    def get_basis_values( self ):
         """
         Gets basis values in format 'B=30;S=37;T=38'
 
@@ -526,9 +552,9 @@ class Viator( XmlManager ):
         S - Sub Basis ID
         T - Tour Time ID
 
-        :param: String content
         :return: String
         """
+        content = self.get_basis()
         if content:
             content = content.split( ';' )
             if len( content ) > 1:
@@ -542,7 +568,7 @@ class Viator( XmlManager ):
                         elif sub_option[0] == 'T':
                             self.tour_time_id = sub_option[1]
 
-    def get_age_band_values( self, content ):
+    def get_age_band_values( self ):
         """
         Gets AgeBandMap values in format 'A=P1;C=P1;Y=P1;I=P5;S=P1'
 
@@ -552,6 +578,7 @@ class Viator( XmlManager ):
         :return: String
         """
         age_band_map = {}
+        content = self.get_age_band_map()
         if content:
 
             # Retrieves and adjusts AGE BAND MAP for later usage in traveller mix
@@ -608,16 +635,22 @@ class Viator( XmlManager ):
         # Creates elements to identify the booking request
         self.response_xml.create_element( 'ApiKey', None, self.get_api_key() )
         self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
-        self.response_xml.create_element( self.request_xml.get_element( 'SupplierId' ) )
-        self.response_xml.create_element( self.request_xml.get_element( 'ExternalReference' ) )
+        self.response_xml.create_element( 'SupplierId', None, self.request_xml.get_element_text( 'SupplierId' ) )
+        self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
+
+        # Creates element for TIMESTAMP
         now = datetime.datetime.now()
         timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%j+10:00" ) # %z is not being recognized
         self.response_xml.create_element( 'Timestamp', None, timestamp )
-        self.response_xml.create_element( self.request_xml.get_element( 'Parameter' ) )
+        parameter_element = self.response_xml.create_element( 'Parameter' )
+        self.response_xml.create_element( 'Name', parameter_element, 'AgeBandMap' )
+        self.response_xml.create_element( 'Value', parameter_element, self.get_age_band_map() )
 
-        # Copies the custom TourOptions made for RESPAX
-        tour_options_element = self.request_xml.get_element( 'TourOptions' )
-        self.response_xml.create_element( tour_options_element )
+        # Creates TourOptions made for RESPAX
+        tour_options_element = self.response_xml.create_element( 'TourOptions' )
+        option_element = self.response_xml.create_element( 'Option', tour_options_element )
+        self.response_xml.create_element( 'Name', option_element, 'Basis' )
+        self.response_xml.create_element( 'Value', option_element, self.get_basis()() )
 
         # Creates elements to identify the Request Status
         request_status_element = self.response_xml.create_element( 'RequestStatus' )
@@ -656,12 +689,14 @@ class Viator( XmlManager ):
         # Creates root tag to identify it as a Booking Response
         self.response_xml.create_root_element( 'AvailabilityResponse' )
 
-        # Creates elements to identify the booking request
-        self.response_xml.create_element( self.request_xml.get_element( 'ApiKey' ) )
-        self.response_xml.create_element( self.request_xml.get_element( 'ResellerId' ) )
-        self.response_xml.create_element( self.request_xml.get_element( 'SupplierId' ) )
-        self.response_xml.create_element( self.request_xml.get_element( 'ExternalReference' ) )
-        self.response_xml.create_element( self.request_xml.get_element( 'SupplierProductCode' ) )
+        # Creates elements to identify the  request
+        self.response_xml.create_element( 'ApiKey', None, self.get_api_key() )
+        self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
+        self.response_xml.create_element( 'SupplierId', None, self.request_xml.get_element_text( 'SupplierId' ) )
+        self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
+        self.response_xml.create_element( 'SupplierProductCode', None, self.get_tour_code() )
+
+        # Creates element for TIMESTAMP
         now = datetime.datetime.now()
         timestamp = now.strftime( "%Y-%m-%dT%H:%M:%S.%j+10:00" ) # %z is not being recognized
         self.response_xml.create_element( 'Timestamp', None, timestamp )
