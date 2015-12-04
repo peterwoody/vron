@@ -824,6 +824,11 @@ class Viator( XmlManager ):
                 self.response_xml.create_element( 'DestinationName', tour_element, tour['tour']['destination_name'] )
                 self.response_xml.create_element( 'TourDescription', tour_element, tour['tour']['tour_description'] )
 
+                # Language Info
+                language_element = self.response_xml.create_element( 'Language', tour_element )
+                self.response_xml.create_element( 'LanguageCode', language_element, 'EN' )
+                self.response_xml.create_element( 'LanguageOption', language_element, 'GUIDE' )
+
                 # creates tour options elements
                 tour_options_element = self.response_xml.create_element( 'TourOption', tour_element )
                 if tour['options']:
