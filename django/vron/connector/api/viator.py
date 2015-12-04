@@ -647,7 +647,7 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'Value', parameter_element, self.get_age_band_map() )
 
         # Creates TourOptions made for RESPAX
-        """ At the moment test harness say we can't return this
+        """ At the moment test harness say this element is not expected
         tour_options_element = self.response_xml.create_element( 'TourOptions' )
         option_element = self.response_xml.create_element( 'Option', tour_options_element )
         self.response_xml.create_element( 'Name', option_element, 'Basis' )
@@ -696,7 +696,9 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'ResellerId', None, self.get_distributor_id() )
         self.response_xml.create_element( 'SupplierId', None, self.request_xml.get_element_text( 'SupplierId' ) )
         self.response_xml.create_element( 'ExternalReference', None, self.get_external_reference() )
+        """ At the moment test harness say this element is not expected
         self.response_xml.create_element( 'SupplierProductCode', None, self.get_tour_code() )
+        """
 
         # Creates element for TIMESTAMP
         now = datetime.datetime.now()
