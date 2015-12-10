@@ -116,16 +116,16 @@ class Viator( XmlManager ):
             'sub_basis_id': { 'tag': 'TourOptions', 'required': False },
             'tour_time_id': { 'tag': 'TourOptions', 'required': False },
             'basis': { 'tag': 'TourOptions', 'required': False },
-            'parameters': { 'tag': 'Parameter', 'required': True },
-            'age_band_map': { 'tag': 'Parameter', 'required': True }
+            'parameters': { 'tag': 'Parameter', 'required': False },
+            'age_band_map': { 'tag': 'Parameter', 'required': False }
         }
         self.tour_list_mapping = {
             'api_key': { 'tag': 'ApiKey', 'required': True },
             'external_reference': { 'tag': 'ExternalReference', 'required': True },
             'timestamp': { 'tag': 'Timestamp', 'required': True },
             'distributor_id': { 'tag': 'ResellerId', 'required': True },
-            'parameters': { 'tag': 'Parameter', 'required': True },
-            'age_band_map': { 'tag': 'Parameter', 'required': True }
+            'parameters': { 'tag': 'Parameter', 'required': False },
+            'age_band_map': { 'tag': 'Parameter', 'required': False }
         }
 
     def check_booking_data( self ):
@@ -726,9 +726,11 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'Timestamp', None, timestamp )
 
         # Creates element for PARAMETER
-        parameter_element = self.response_xml.create_element( 'Parameter' )
-        self.response_xml.create_element( 'Name', parameter_element, 'AgeBandMap' )
-        self.response_xml.create_element( 'Value', parameter_element, self.get_age_band_map() )
+        age_band_map = self.get_age_band_map()
+        if age_band_map:
+            parameter_element = self.response_xml.create_element( 'Parameter' )
+            self.response_xml.create_element( 'Name', parameter_element, 'AgeBandMap' )
+            self.response_xml.create_element( 'Value', parameter_element, age_band_map )
 
         # Creates elements to identify the Request Status
         request_status_element = self.response_xml.create_element( 'RequestStatus' )
@@ -795,9 +797,11 @@ class Viator( XmlManager ):
         self.response_xml.create_element( 'Timestamp', None, timestamp )
 
         # Creates element for PARAMETER
-        parameter_element = self.response_xml.create_element( 'Parameter' )
-        self.response_xml.create_element( 'Name', parameter_element, 'AgeBandMap' )
-        self.response_xml.create_element( 'Value', parameter_element, self.get_age_band_map() )
+        age_band_map = self.get_age_band_map()
+        if age_band_map:
+            parameter_element = self.response_xml.create_element( 'Parameter' )
+            self.response_xml.create_element( 'Name', parameter_element, 'AgeBandMap' )
+            self.response_xml.create_element( 'Value', parameter_element, age_band_map )
 
         # Creates elements to identify the Request Status
         request_status_element = self.response_xml.create_element( 'RequestStatus' )
