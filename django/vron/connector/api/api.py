@@ -125,12 +125,16 @@ class Api( object ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
             return self.viator.booking_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
-        # Get tour pickups in RON
-        tour_pickups = self.ron.read_tour_pickups(
-            self.viator.get_tour_code(),
-            self.viator.get_tour_time_id(),
-            self.viator.get_basis_id()
-        )
+        # Get tour pickups details if needed
+        pickup_point = self.viator.get_pickup_point()
+        pickup_key = ''
+        if pickup_point:
+            tour_pickups = self.ron.read_tour_pickups(
+                self.viator.get_tour_code(),
+                self.viator.get_tour_time_id(),
+                self.viator.get_basis_id()
+            )
+            pickup_key = self.viator.get_pickup_key( tour_pickups )
 
         # Creates reservation dictionary for RON
         reservation = {
@@ -150,12 +154,38 @@ class Api( object ):
             'intNoPax_Child': self.viator.get_pax_child(),
             'intNoPax_FOC': self.viator.get_pax_foc(),
             'intNoPax_UDef1': self.viator.get_pax_udef1(),
-            'strPickupKey': self.viator.get_pickup_key( tour_pickups ),
+            'strPickupKey': pickup_key,
             'strGeneralComment': self.viator.get_general_comments(),
         }
 
         # Writes booking in RON
         booking_result = self.ron.write_reservation( reservation )
+
+        """
+        To clarify further on the optional Pickup Point.
+        Some tours in Respax
+        1) do not have any pickup point
+        2) have pickups but are not mandatory
+        3) have pickups and are mandatory so won't book with out a pickup key.
+
+        Scenarios
+
+        If the Pickup Point is not sent by Viator (as now optional)
+        After Trying to make booking with no pickup point (Key)
+        This will be successful for scenario 1 & 2 above and return a confirmation.
+        if it is mandatory (3) in Respax then it won't book and return the xml Error response below.
+        so then if we could resubmitt booking attempt, Picking the first Pickup From the readTourPickups list and Insert - "No Pickup Sent" (in the comments)
+        """
+        if 'insufficient pickup' in self.ron.error_message.lower():
+            # It means pickup is mandatory for this trip on RON
+            tour_pickups = self.ron.read_tour_pickups(
+                self.viator.get_tour_code(),
+                self.viator.get_tour_time_id(),
+                self.viator.get_basis_id()
+            )
+            reservation['strPickupKey'] = tour_pickups[0]['strPickupKey']
+            reservation['strGeneralComment'] += ' - No Pickup Sent'
+            booking_result = self.ron.write_reservation( reservation )
 
         # Logs response
         if booking_result:

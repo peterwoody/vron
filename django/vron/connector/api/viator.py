@@ -93,7 +93,7 @@ class Viator( XmlManager ):
             'pax_foc': { 'tag': 'TourOptions', 'required': True },
             'pax_udef1': { 'tag': 'TourOptions', 'required': True },
             'pickup_key': { 'tag': '', 'required': False },
-            'pickup_point': { 'tag': 'PickupPoint', 'required': True },
+            'pickup_point': { 'tag': 'PickupPoint', 'required': False },
             'lead_traveller': { 'tag': 'Traveller', 'required': True },
             'first_name': { 'tag': 'GivenName', 'required': True },
             'last_name': { 'tag': 'SurName', 'required': True },
@@ -351,7 +351,7 @@ class Viator( XmlManager ):
                     for pickup in tour_pickups:
                         if self.pickup_key == "": # If no match is made, we default the value to the first of the list
                             self.pickup_key = pickup['strPickupKey']
-                        if pickup_point == pickup['strPickupName']:
+                        if pickup_point.lower() == pickup['strPickupName'].lower():
                             self.pickup_key = pickup['strPickupKey']
                             found = True
                             break
