@@ -27,6 +27,9 @@ class AdminUserForm( BaseModelForm ):
     Form for ADD and EDIT ADMIN USERS
     """
 
+    password = forms.CharField( required = False, label = "Password", widget = forms.PasswordInput( attrs = { 'class' : 'form-control'  } ) )
+    confirm_password = forms.CharField( required = False, label = "Confirm Password", widget = forms.PasswordInput( attrs = { 'class' : 'form-control'  } ) )
+
     class Meta:
         model = get_user_model()
         fields = [ 'name', 'email', 'is_superuser', 'is_active', 'groups' ]
@@ -44,15 +47,36 @@ class AdminUserForm( BaseModelForm ):
         """
         user = super( AdminUserForm, self ).save( commit = False )
         user.is_admin = True
-        if not user.password:
-            plain_password = get_user_model().objects.make_random_password()
-            user.set_password( plain_password )
+        password = self.cleaned_data["password"]
+        if password:
+            user.set_password( password )
         if commit:
             user.save()
             user.groups = self.cleaned_data['groups']
         return user
 
+    def clean( self ):
+        """
+        Extra validation for fields that depends on other fields
 
+        :return: Dictionary
+        """
+        cleaned_data = super( AdminUserForm, self ).clean()
+        password = cleaned_data.get( "password" )
+        confirm_password = cleaned_data.get( "confirm_password" )
+        email = cleaned_data.get( "email" )
+
+        if password and confirm_password:
+            if password != confirm_password:
+                raise forms.ValidationError( "Passwords do not match." )
+        else:
+            try:
+                user_exists = get_user_model().objects.get( email = email )
+            except get_user_model().DoesNotExist:
+                user_exists = False
+            if not user_exists:
+                raise forms.ValidationError( "You need to create a password." )
+        return cleaned_data
 
 
 
