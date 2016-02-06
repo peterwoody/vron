@@ -31,7 +31,7 @@ def api( request ):
 
     # Reads XML content
     if 'debug' in request.GET:
-        response = requests.get( "http://intertech.com.br/viator_booking_2.xml" )
+        response = requests.get( "http://intertech.com.br/viator_tour_list_2.xml" )
         xml_raw = response.content
     elif request.method == 'POST':
         xml_raw = request.body

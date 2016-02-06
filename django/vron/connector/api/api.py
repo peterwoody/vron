@@ -333,17 +333,17 @@ class Api( object ):
         tour_list_empty_check = self.viator.check_tour_list_data()
         if tour_list_empty_check != True:
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR001'] )
-            return self.viator.availability_response( '', '', 'VRONERR001', tour_list_empty_check, self.errors['VRONERR001'] )
+            return self.viator.tour_list_response( '', '', 'VRONERR001', tour_list_empty_check, self.errors['VRONERR001'] )
 
         # Validates api key
         if not self.validate_api_key( self.viator.get_api_key() ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR002'] )
-            return self.viator.availability_response( '', '', 'VRONERR002', 'ApiKey', self.errors['VRONERR002'] )
+            return self.viator.tour_list_response( '', '', 'VRONERR002', 'ApiKey', self.errors['VRONERR002'] )
 
         # Logs in RON
         if not self.ron.login( self.viator.get_distributor_id() ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
-            return self.viator.availability_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
+            return self.viator.tour_list_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
 
         # Initial settings for the query
@@ -353,7 +353,7 @@ class Api( object ):
         tours = self.ron.read_tours()
         if not tours:
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR004'] )
-            return self.viator.availability_response( '', '', 'VRONERR004', 'SupplierProductCode', self.errors['VRONERR004'] )
+            return self.viator.tour_list_response( '', '', 'VRONERR004', 'SupplierId', self.errors['VRONERR004'] )
         for tour in tours:
 
             # Reads data from this tour
@@ -395,7 +395,7 @@ class Api( object ):
         # Nothing found
         if len( tour_list ) == 0:
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR004'] )
-            return self.viator.availability_response( '', '', 'VRONERR004', 'SupplierProductCode', self.errors['VRONERR004'] )
+            return self.viator.tour_list_response( '', '', 'VRONERR004', 'SupplierProductCode', self.errors['VRONERR004'] )
 
         # Logs response
         self.log_request( settings.ID_LOG_STATUS_COMPLETE_APPROVED, self.viator.get_external_reference() )
