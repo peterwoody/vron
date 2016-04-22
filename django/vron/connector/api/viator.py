@@ -11,6 +11,7 @@ http://supplierapitestharness.viatorinc.com/documentation.php
 from vron.connector.api.xml_manager import XmlManager
 import datetime
 from vron.core.util import convert_date_format
+import os
 
 
 
@@ -347,7 +348,7 @@ class Viator( XmlManager ):
             pickup_point = self.get_pickup_point()
             if pickup_point:
                 found = False
-                if tour_pickups and len( tour_pickups ) > 0 :
+                if tour_pickups and len(tour_pickups) > 0:
                     for pickup in tour_pickups:
                         if self.pickup_key == "": # If no match is made, we default the value to the first of the list
                             self.pickup_key = pickup['strPickupKey']
@@ -356,7 +357,7 @@ class Viator( XmlManager ):
                             found = True
                             break
                 if not found:
-                    self.append_to_general_comments( 'pickup_point=' + str( pickup_point ) )
+                    self.append_to_general_comments( 'Pickup point: ' + str( pickup_point ) )
         return self.pickup_key
 
     def get_first_name( self ):
@@ -418,7 +419,7 @@ class Viator( XmlManager ):
                 elif type == 'EMAIL':
                     self.email = self.get_element_text( 'ContactValue', self.contact_detail )
                 elif type == 'NOT_CONTACTABLE':
-                    self.append_to_general_comments( 'contact_type=' + str( type ) )
+                    self.append_to_general_comments( 'Contact type: ' + str( type ) )
         return self.contact_detail
 
     def get_general_comments( self ):
@@ -428,27 +429,27 @@ class Viator( XmlManager ):
         """
 
         # Gets language information
-        if 'language_code' not in self.general_comments:
+        if 'Language code: ' not in self.general_comments:
             tour_options = self.get_tour_options()
             if tour_options:
                 language = self.request_xml.get_element( 'Language', tour_options )
                 if language:
                     language_code = self.request_xml.get_element_text( 'LanguageCode', language )
                     if language_code:
-                        self.append_to_general_comments( 'language_code=' + str( language_code ) )
+                        self.append_to_general_comments( 'Language code: ' + str( language_code ) )
                     language_option = self.request_xml.get_element_text( 'LanguageOption', language )
                     if language_option:
-                        self.append_to_general_comments( 'language_option=' + str( language_option ) )
+                        self.append_to_general_comments( 'Language option: ' + str( language_option ) )
 
         # Gets traveller age band information
-        if 'lead_traveller_age_band' not in self.general_comments:
+        if 'Lead traveller age band: ' not in self.general_comments:
             lead_traveller = self.get_lead_traveller()
             lead_traveller_age_band = self.request_xml.get_element_text( 'AgeBand', lead_traveller )
             if lead_traveller_age_band:
-                self.append_to_general_comments( 'lead_traveller_age_band=' + str( lead_traveller_age_band ) )
+                self.append_to_general_comments( 'Lead traveller age band: ' + str( lead_traveller_age_band ) )
 
         # Gets questions information
-        if 'question' not in self.general_comments:
+        if 'Question: ' not in self.general_comments:
             required_info = self.request_xml.get_element( 'RequiredInfo' )
             if required_info:
                 questions = self.request_xml.get_element_list( 'Question', required_info )
@@ -457,28 +458,41 @@ class Viator( XmlManager ):
                         question_text = self.request_xml.get_element_text( 'QuestionText', question )
                         answer_text = self.request_xml.get_element_text( 'QuestionAnswer', question )
                         if question_text and answer_text:
-                            self.append_to_general_comments( 'question=' + str( question_text ) )
-                            self.append_to_general_comments( 'answer=' + str( answer_text ) )
+                            self.append_to_general_comments( 'Question: ' + str( question_text ) )
+                            self.append_to_general_comments( 'Answer: ' + str( answer_text ) )
 
         # Gets special requirement information
-        if 'special_requirement' not in self.general_comments:
+        if 'Special requirement: ' not in self.general_comments:
             special_requirement = self.request_xml.get_element_text( 'SpecialRequirement' )
             if special_requirement:
-                self.append_to_general_comments( 'special_requirement=' + str( special_requirement ) )
+                self.append_to_general_comments( 'Special requirement: ' + str( special_requirement ) )
+
+        #PROPERTY ADDED BY ADEMAR ON 21/04/2016
+        if 'Amount:' not in self.general_comments:
+            amount = self.request_xml.get_element_text('Amount')
+            if special_requirement:
+                self.append_to_general_comments('Amount: {0}'.format(amount))
+
+         # Gets supplier option name information
+        #PROPERTY ADDED BY ADEMAR ON 21/04/2016
+        if 'Tour grade name:' not in self.general_comments:
+            supplier_note = self.request_xml.get_element_text('SupplierOptionName', self.get_tour_options())
+            if supplier_note:
+                self.append_to_general_comments('Tour grade name: {0}'.format(supplier_note))
 
         # Gets supplier note information
-        if 'supplier_note' not in self.general_comments:
+        if 'Supplier note:' not in self.general_comments:
             supplier_note = self.request_xml.get_element_text( 'SupplierNote' )
             if supplier_note:
-                self.append_to_general_comments( 'supplier_note=' + str( supplier_note ) )
+                self.append_to_general_comments('Supplier note: {0}'.format(supplier_note))
 
         # Gets additional remarks information
-        if 'remark' not in self.general_comments:
+        if 'Remark: ' not in self.general_comments:
             additional_remarks = self.request_xml.get_element( 'AdditionalRemarks' )
             if additional_remarks:
                 options = list( additional_remarks )
                 for option in options:
-                    self.append_to_general_comments( 'remark=' + str( option.text ) )
+                    self.append_to_general_comments( 'Remark: ' + str( option.text ) )
 
         return self.general_comments
 
@@ -640,7 +654,7 @@ class Viator( XmlManager ):
         if self.general_comments == '':
             self.general_comments = value
         else:
-            self.general_comments += ';' + value
+            self.general_comments += os.linesep + value
 
     def booking_response( self, confirmation_number, transaction_error, request_error_code = None,
                           request_error_tag = None, request_error_message = None ):
