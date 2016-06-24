@@ -28,10 +28,18 @@ BASE_URL_SECURE = 'https://vron.respax.com'
 # DEBUG AND ENVIRONMENT SETTINGS
 #########################################
 IS_PROD = False
-DEBUG = True
+DEBUG = False
 SQL_DEBUG = False
 TEMPLATE_DEBUG = True
 
+
+
+#########################################
+# PAYMENT OPTIONS
+#########################################
+UPDATE_PAYMENT_INTERVAL_DAYS = 5
+ALLOWED_PAYMENT_OPTIONS = ['full-agent', 'bal-agent/levy-pob']
+DEFAULT_PAYMENT_OPTION = ALLOWED_PAYMENT_OPTIONS[0]
 
 
 
@@ -50,18 +58,36 @@ INTERNAL_IPS = (
 )
 
 
+#########################################
+# EMAIL SETTINGS
+#########################################
 
+# SMTP Config
+EMAIL_PAYMENT_OPTION_TO = ["support@respax.com"]
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = '#'
+EMAIL_HOST_PASSWORD = '#'
+EMAIL_PORT = 587
 
 
 #########################################
 # DATABASES
 #########################################
 DATABASES = {
-    'default': {
+    'default_': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'vron',
         'USER': 'vron',
         'PASSWORD': 'uhaRYush72ogHau37iO920',
+        'HOST': '127.0.0.1',
+        'PORT': '',
+    },
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'vron',
+        'USER': 'root',
+        'PASSWORD': 'qw34rt',
         'HOST': '127.0.0.1',
         'PORT': '',
     }

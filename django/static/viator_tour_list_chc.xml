@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TourListRequest xmlns="http://toursgds.com/api/01">
+    <ApiKey>8Jkw98HQDKlhG342801shkUi3eDCHC</ApiKey>
+    <ResellerId>1000</ResellerId>
+    <SupplierId>1727</SupplierId>
+    <ExternalReference>330603172789815736179343471159</ExternalReference>
+    <Timestamp>2016-02-02T20:56:45.794-08:00</Timestamp>
+    <Parameter>
+    <Name>AgeBandMap</Name>
+    <Value>A=P1;C=P3;Y=P1;I=P5;S=P1</Value>
+    </Parameter>
+</TourListRequest>

@@ -38,6 +38,7 @@ class Ron( object ):
         self.host_id = ''
         self.ron_session_id = ''
         self.error_message = ''
+        self.payment_option = ''
         if mode == 'live':
             self.url = self.config_info[settings.ID_CONFIG_RON_LIVE_URL]
         else:
@@ -109,7 +110,7 @@ class Ron( object ):
 
         # Calls ron method
         try:
-            return ron.writeReservation( self.host_id, -1, reservation, { 'strPaymentOption': 'full-agent' }, {} )
+            return ron.writeReservation( self.host_id, -1, reservation, { 'strPaymentOption': self.payment_option }, {} )
         except xmlrpclib.Fault as error:
             self.error_message = error.faultString
             return False
@@ -168,6 +169,25 @@ class Ron( object ):
         except xmlrpclib.Fault as error:
             self.error_message = error.faultString
             return False
+
+    def read_payment_options(self):
+
+        """
+        Returns a list of payment options available for the specified tour_code
+
+        :param: String tour_code
+        :return: List
+        """
+
+        # Creates ron XML-RPC server connection
+        ron = self.connect()
+
+        try:
+            return ron.readPaymentOptions( self.host_id )
+        except xmlrpclib.Fault as error:
+            self.error_message = error.faultString
+            return False
+
 
     def read_tour_bases( self, tour_code ):
         """

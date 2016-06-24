@@ -6,8 +6,10 @@ API Handling Class
 ##########################
 # Imports
 ##########################
+from django.utils import timezone
 from lxml import etree, objectify
 from django.conf import settings
+from vron.core.mailer import Mailer
 from vron.core.util import get_object_or_false
 from vron.connector.models import Config, Key
 from vron.connector.tasks import log_request
@@ -15,10 +17,8 @@ from vron.connector.api.xml_manager import XmlManager
 from vron.connector.api.ron import Ron
 from vron.connector.api.viator import Viator
 from vron.core.util import date_range
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 from operator import itemgetter
-import datetime
-import codecs
 
 
 
@@ -319,6 +319,49 @@ class Api( object ):
         # Returnx XML formatted response
         return self.viator.availability_response( availability_results, self.ron.error_message )
 
+    def update_payment_option(self):
+
+        '''
+
+        TRAINING CHC to FULL-AGENT
+        TRAINING TW to FULL-LEVY
+        TRAINING AET to COMM-AGENT/BAL POB
+
+        if the first strCode found is full-agent set full-agent
+            else
+        if the first strCode found is bal-agent/levy-pob
+            set bal-agent/levy-pob
+        else
+            set full-agent AND send EMAIL to Support
+
+        '''
+
+        key = self.get_key_object(self.viator.get_api_key())
+        today = timezone.now().today()
+
+        if key.last_update_payment:
+            expire_date = key.last_update_payment + timedelta(days=settings.UPDATE_PAYMENT_INTERVAL_DAYS)
+        else:
+            expire_date = today
+            key.last_update_payment = today
+
+        if today.date() >= expire_date.date():
+            payment_options = self.ron.read_payment_options()
+            valid_payment_options = []
+            for p in payment_options:
+                if p['strCode'] in settings.ALLOWED_PAYMENT_OPTIONS:
+                    valid_payment_options.append(p['strCode'])
+
+            if len(valid_payment_options) > 0:
+                key.payment_option = valid_payment_options[0]
+
+            else:
+                key.payment_option = "full-agent"
+                Mailer.send_wrong_payment_option(self.viator.host_id)
+
+            key.save()
+
+
     def tour_list_request( self ):
         """
         Receives a xml request from viator, convert the data for
@@ -345,6 +388,7 @@ class Api( object ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
             return self.viator.tour_list_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
+        self.update_payment_option()
 
         # Initial settings for the query
         tour_list = []
@@ -422,6 +466,20 @@ class Api( object ):
 
         :return: Boolean
         """
+
+        key = self.get_key_object(api_key)
+        if key:
+            return True
+        return False
+
+    def get_key_object(self, api_key):
+
+        """
+        returns new Key instance from database
+
+        :return: Boolean
+        """
+
         # Uses base key (set on config) to split the text and identify host id
         base_key = self.config_info[settings.ID_CONFIG_BASE_API_KEY]
         if api_key is not None and base_key in api_key:
@@ -430,7 +488,7 @@ class Api( object ):
             self.ron.host_id = host_id
 
             # Searches for key/host_id in the DB
-            key = get_object_or_false( Key, name = self.ron.host_id )
-            if key:
-                return True
+            return get_object_or_false( Key, name = self.ron.host_id )
+
         return False
+

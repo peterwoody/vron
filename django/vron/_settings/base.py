@@ -114,26 +114,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 
-
-
-
-#########################################
-# EMAIL SETTINGS
-#########################################
-
-# Default email to send messages to users
-DEFAULT_FROM_EMAIL = 'Name <email@vron.com>'
-
-# SMTP Config
-EMAIL_HOST = 'smtp-address-here'
-EMAIL_HOST_USER = 'user-here'
-EMAIL_HOST_PASSWORD = 'password-here'
-EMAIL_PORT = 587
-
-
-
-
-
 #########################################
 # DJANGO APPS REQUIRED
 #########################################

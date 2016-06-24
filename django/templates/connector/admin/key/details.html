@@ -49,27 +49,34 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-lg-6">
-                                
+
                                 	<dl class="dl-horizontal">
-		                                
+
 		                                <dt>Key:</dt>
 		                                <dd>{{ base_key }}{{ key.name }}</dd>
-		                                
+
 		                                <dt>Comments:</dt>
-		                                <dd>{{ key.comments }}</dd>
-		                                
+                                        <dd>{{ key.comments }}&nbsp</dd>
+
+                                        <dt>Payment option:</dt>
+		                                <dd>{{ key.payment_option }}&nbsp</dd>
+
+                                        <dt>Last update:</dt>
+		                                <dd>{{ key.last_update_payment }}&nbsp</dd>
+
 		                            </dl>
-		                            
+		                            <br>
+                                    <br>
 		                            <div class="text-center buttons">
 		                            	<a href="{% url 'admin:connector:keys' %}" class="btn btn-default"><i class="fa fa-arrow-left"></i>Go Back</a>
 		                                <a href="{% url 'admin:connector:key_edit' key.id %}" class="btn btn-default"><i class="fa fa-edit"></i>Edit Data</a>
 		                                <a href="#" onclick="confirm_delete( '{% url 'admin:connector:key_delete' key.id %}' )" class="btn btn-danger"><i class="fa fa-trash-o"></i>Delete</a>
 									</div>
-                                    
+
                                 </div>
 
                             </div>
-                            
+
                         </div>
                    
                     </div>

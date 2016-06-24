@@ -11,7 +11,7 @@ Mailer.send_welcome_email( user )
 # Imports
 ##########################
 from django.core.mail import EmailMessage
-from django.template.loader import get_template
+from django.template.loader import get_template, render_to_string
 from django.template import Context
 from django.conf import settings
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -28,6 +28,19 @@ from django.utils.translation import ugettext as _
 # Class definitions
 ##########################
 class Mailer( object ):
+
+    @staticmethod
+    def send_wrong_payment_option(supplier_name):
+
+        to = settings.EMAIL_PAYMENT_OPTION_TO
+        from_email = settings.EMAIL_HOST_USER
+        subject = "ERROR (VRON) : Invalid payment option"
+
+        message = get_template('connector/email_payment_option.html').render(Context({"supplier_name": supplier_name}))
+        msg = EmailMessage(subject, message, to=to, from_email=from_email)
+        msg.content_subtype = 'html'
+        msg.send()
+
 
     @staticmethod
     def send( subject, body, to, from_email = None, cc = None, bcc = None, attachments = None ):

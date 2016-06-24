@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
             model_name='log',
             name='external_reference',
             field=models.CharField(null=True, max_length=40, verbose_name='external reference', blank=True),
-            preserve_default=True,
+            #preserve_default=True,
         ),
     ]

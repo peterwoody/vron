@@ -43,6 +43,9 @@ class Key( BaseModel ):
 
     name = models.CharField( "name", max_length = 20 )
     comments = models.CharField( "comments", max_length = 255, blank = True, null = True )
+    payment_option = models.CharField("Payment option", max_length = 255, blank = True, null = True)
+    last_update_payment = models.DateTimeField(blank = True, null = True )
+    clear_payment_option = models.NullBooleanField(default=False)
 
     # META Options
     class Meta:

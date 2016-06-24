@@ -15,14 +15,19 @@
 
 			// JS FORM Validation
 			$( "#main_form" ).submit( function() {
+
+                $("#id_payment_option").prop("disabled", false);
+                $("#id_last_update_payment").prop("disabled", false);
 				return validate_empty_fields( this, '{{ form.get_required_fields }}' );
 			});
 
             // Sets key preview
-            $( "#preview").html( $( "#id_name").val() )
+            $( "#preview").html( $( "#id_name").val() );
             $( "#id_name" ).keyup( function() {
-				$( "#preview").html( $( this ).val() )
+				$( "#preview").html( $( this ).val() );
 			});
+
+            $("#id_clear_payment_option").css({"width": "24px", "margin-right": "34px"});
 
 			// JS for onload
 			{{ on_load|default:'' }}
@@ -68,13 +73,8 @@
                                 </div>
                             </div>
                         </div>
-
-
-                   
                     </div>
-                    
                 </div>
-            
             </div>
 
 {% endblock content %}
