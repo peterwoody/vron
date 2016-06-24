@@ -28,7 +28,7 @@ BASE_URL_SECURE = 'https://vron.respax.com'
 # DEBUG AND ENVIRONMENT SETTINGS
 #########################################
 IS_PROD = False
-DEBUG = False
+DEBUG = True
 SQL_DEBUG = False
 TEMPLATE_DEBUG = True
 
@@ -75,7 +75,7 @@ EMAIL_PORT = 587
 # DATABASES
 #########################################
 DATABASES = {
-    'default_': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'vron',
         'USER': 'vron',
@@ -83,12 +83,4 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '',
     },
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'vron',
-        'USER': 'root',
-        'PASSWORD': 'qw34rt',
-        'HOST': '127.0.0.1',
-        'PORT': '',
-    }
 }
