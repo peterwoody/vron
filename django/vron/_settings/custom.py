@@ -28,7 +28,7 @@ BASE_URL_SECURE = 'https://vron.respax.com'
 # DEBUG AND ENVIRONMENT SETTINGS
 #########################################
 IS_PROD = False
-DEBUG = False
+DEBUG = True
 SQL_DEBUG = False
 TEMPLATE_DEBUG = True
 
