@@ -12,14 +12,6 @@ from vron._settings.base import *
 
 
 
-####REMOVE THIS
-ADMINS = (('Startmobile', 'contato@startmobile.com.br'),)
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'contato@startmobile.com.br'
-EMAIL_HOST_PASSWORD = 'qw34rt67'
-EMAIL_PORT = 587
-
 
 
 #########################################
@@ -71,12 +63,13 @@ INTERNAL_IPS = (
 #########################################
 
 # SMTP Config
-#EMAIL_PAYMENT_OPTION_TO = ["support@respax.com"]
-#EMAIL_USE_TLS = True
-#EMAIL_HOST = 'smtp.gmail.com'
-#EMAIL_HOST_USER = '#'
-#EMAIL_HOST_PASSWORD = '#'
-#EMAIL_PORT = 587
+ADMINS = (('Ademar Victorino', 'ademarvictorino@gmail.com'),) # ERROR EMAILS
+EMAIL_PAYMENT_OPTION_TO = ["support@respax.com"]
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp-tls.respax.com'
+EMAIL_HOST_USER = 'support@respax.com.au'
+EMAIL_HOST_PASSWORD = '91a35021-f00d-4cae-8422-fdbdb1e52674'
+EMAIL_PORT = 2525
 
 
 #########################################
@@ -90,12 +83,13 @@ DATABASES = {
         'PASSWORD': 'uhaRYush72ogHau37iO920',
         'HOST': '127.0.0.1',
         'PORT': '',
-    },'default_local': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'vron',
-        'USER': 'root',
-        'PASSWORD': 'qw34rt',
-        'HOST': '127.0.0.1',
-        'PORT': '',
     }
+    #,'default_local': {
+    #    'ENGINE': 'django.db.backends.mysql',
+    #    'NAME': 'vron',
+    #    'USER': 'root',
+    #    'PASSWORD': 'qw34rt',
+    #    'HOST': '127.0.0.1',
+    #    'PORT': '',
+    #}
 }
