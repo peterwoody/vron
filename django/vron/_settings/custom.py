@@ -75,14 +75,14 @@ EMAIL_PORT = 587
 # DATABASES
 #########################################
 DATABASES = {
-    'default_test': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'vron',
         'USER': 'vron',
         'PASSWORD': 'uhaRYush72ogHau37iO920',
         'HOST': '127.0.0.1',
         'PORT': '',
-    },'default': {
+    },'default_local': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'vron',
         'USER': 'root',
