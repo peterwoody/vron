@@ -12,6 +12,14 @@ from vron._settings.base import *
 
 
 
+####REMOVE THIS
+ADMINS = (('Startmobile', 'contato@startmobile.com.br'),)
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'contato@startmobile.com.br'
+EMAIL_HOST_PASSWORD = 'qw34rt67'
+EMAIL_PORT = 587
+
 
 
 #########################################
