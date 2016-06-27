@@ -13,11 +13,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Config',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
                 ('created_date', models.DateTimeField(auto_now_add=True, verbose_name='created date')),
                 ('modified_date', models.DateTimeField(auto_now=True, verbose_name='modified date')),
-                ('name', models.CharField(max_length=100, verbose_name=b'option name')),
-                ('value', models.CharField(max_length=100, verbose_name=b'option value')),
+                ('name', models.CharField(verbose_name='option name', max_length=100)),
+                ('value', models.CharField(verbose_name='option value', max_length=100)),
             ],
             options={
                 'default_permissions': [],
@@ -28,14 +28,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Key',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
                 ('created_date', models.DateTimeField(auto_now_add=True, verbose_name='created date')),
                 ('modified_date', models.DateTimeField(auto_now=True, verbose_name='modified date')),
-                ('name', models.CharField(max_length=20, verbose_name=b'name')),
-                ('comments', models.CharField(max_length=255, null=True, verbose_name=b'comments', blank=True)),
-                ('payment_option', models.CharField(max_length=255, null=True, verbose_name=b'Payment option', blank=True)),
-                ('last_update_payment', models.DateTimeField(null=True, blank=True)),
-                ('clear_payment_option', models.NullBooleanField(default=False)),
+                ('name', models.CharField(verbose_name='name', max_length=20)),
+                ('comments', models.CharField(blank=True, null=True, verbose_name='comments', max_length=255)),
             ],
             options={
                 'default_permissions': [],
@@ -46,13 +43,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Log',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
                 ('created_date', models.DateTimeField(auto_now_add=True, verbose_name='created date')),
                 ('modified_date', models.DateTimeField(auto_now=True, verbose_name='modified date')),
-                ('external_reference', models.CharField(max_length=40, null=True, verbose_name=b'external reference', blank=True)),
-                ('error_message', models.TextField(null=True, verbose_name=b'error message', blank=True)),
-                ('ron_confirmation_number', models.IntegerField(null=True, verbose_name=b'confirmation number', blank=True)),
-                ('attempts', models.IntegerField(default=1, verbose_name=b'attempts')),
+                ('external_reference', models.CharField(verbose_name='external reference', max_length=40)),
+                ('error_message', models.TextField(blank=True, null=True, verbose_name='error message')),
+                ('attempts', models.IntegerField(default=1, verbose_name='attempts')),
             ],
             options={
                 'default_permissions': [],
@@ -63,7 +59,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LogStatus',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
                 ('created_date', models.DateTimeField(auto_now_add=True, verbose_name='created date')),
                 ('modified_date', models.DateTimeField(auto_now=True, verbose_name='modified date')),
                 ('name', models.CharField(max_length=50)),
