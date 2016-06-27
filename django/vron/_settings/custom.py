@@ -28,7 +28,7 @@ BASE_URL_SECURE = 'https://vron.respax.com'
 # DEBUG AND ENVIRONMENT SETTINGS
 #########################################
 IS_PROD = False
-DEBUG = True
+DEBUG = False
 SQL_DEBUG = False
 TEMPLATE_DEBUG = True
 
@@ -37,7 +37,7 @@ TEMPLATE_DEBUG = True
 #########################################
 # PAYMENT OPTIONS
 #########################################
-UPDATE_PAYMENT_INTERVAL_DAYS = 5
+UPDATE_PAYMENT_INTERVAL_DAYS = 30
 ALLOWED_PAYMENT_OPTIONS = ['full-agent', 'bal-agent/levy-pob']
 DEFAULT_PAYMENT_OPTION = ALLOWED_PAYMENT_OPTIONS[0]
 
