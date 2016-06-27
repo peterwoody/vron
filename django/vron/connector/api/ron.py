@@ -38,7 +38,6 @@ class Ron( object ):
         self.host_id = ''
         self.ron_session_id = ''
         self.error_message = ''
-        self.payment_option = ''
         if mode == 'live':
             self.url = self.config_info[settings.ID_CONFIG_RON_LIVE_URL]
         else:
@@ -96,7 +95,7 @@ class Ron( object ):
         except xmlrpclib.Fault:
             return False
 
-    def write_reservation( self, reservation ):
+    def write_reservation( self, reservation, payment_option=None ):
         """
         Returns a dictionary containing a single associative array of
         extended information for the host including contact information.
@@ -107,10 +106,12 @@ class Ron( object ):
 
         # Creates ron XML-RPC server connection
         ron = self.connect()
+        if not payment_option:
+            payment_option = settings.DEFAULT_PAYMENT_OPTION
 
         # Calls ron method
         try:
-            return ron.writeReservation( self.host_id, -1, reservation, { 'strPaymentOption': self.payment_option }, {} )
+            return ron.writeReservation( self.host_id, -1, reservation, { 'strPaymentOption': payment_option }, {} )
         except xmlrpclib.Fault as error:
             self.error_message = error.faultString
             return False

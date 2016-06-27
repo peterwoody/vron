@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BookingRequest xmlns="http://toursgds.com/api/01">
+  <ApiKey>8Jkw98HQDKlhG342801shkUi3eDTW</ApiKey>
+  <ResellerId>1000</ResellerId>
+  <SupplierId>1726</SupplierId>
+      <Parameter>
+<Name>AgeBandMap</Name>
+<Value>A=P1;C=P3;Y=P1;I=P5;S=P1</Value>
+</Parameter>
+  <ExternalReference>105813941654350151424</ExternalReference>
+  <Timestamp>2014-03-07T13:42:31.423+11:00</Timestamp>
+  <BookingReference>550014334</BookingReference>
+  <TravelDate>2016-1-28</TravelDate>
+  <SupplierProductCode>WHBWB</SupplierProductCode>
+    <TourOptions>
+         <Option>
+            <Name>Basis</Name>
+            <Value>B=1602;S=3461;T=1710</Value>
+         </Option>
+      </TourOptions>
+  <Inclusions>
+    <Inclusion>Walking tour</Inclusion>
+    <Inclusion>All food and drink tastings</Inclusion>
+    <Inclusion>Repeat Visitor discount card</Inclusion>
+    <Inclusion>Seattle dining guide and seasonal recipes</Inclusion>
+    <Inclusion>Headsets to hear the guide clearly</Inclusion>
+  </Inclusions>
+  <CurrencyCode>USD</CurrencyCode>
+  <Amount>34.17</Amount>
+  <Traveller>
+    <TravellerIdentifier>1</TravellerIdentifier>
+    <TravellerTitle>Mr</TravellerTitle>
+    <GivenName>ludovic</GivenName>
+    <Surname>test</Surname>
+    <AgeBand>ADULT</AgeBand>
+    <LeadTraveller>true</LeadTraveller>
+  </Traveller>
+  <Traveller>
+    <TravellerIdentifier>2</TravellerIdentifier>
+    <TravellerTitle>Mr</TravellerTitle>
+    <GivenName>test</GivenName>
+    <Surname>test</Surname>
+    <AgeBand>ADULT</AgeBand>
+    <LeadTraveller>true</LeadTraveller>
+  </Traveller>
+  <TravellerMix>
+    <Adult>2</Adult>
+    <Child>0</Child>
+    <Youth>0</Youth>
+    <Infant>0</Infant>
+    <Senior>0</Senior>
+    <Total>2</Total>
+  </TravellerMix>
+  <SpecialRequirement>test</SpecialRequirement>
+  <ContactDetail>
+    <ContactType>MOBILE</ContactType>
+    <ContactName>test test </ContactName>
+    <ContactValue>AU+61 5435543543</ContactValue>
+  </ContactDetail>
+</BookingRequest>

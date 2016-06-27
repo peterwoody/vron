@@ -125,6 +125,8 @@ class Api( object ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
             return self.viator.booking_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
+        key = self.update_payment_option()
+
         # Get tour pickups details if needed
         pickup_point = self.viator.get_pickup_point()
         pickup_key = ''
@@ -159,7 +161,7 @@ class Api( object ):
         }
 
         # Writes booking in RON
-        booking_result = self.ron.write_reservation( reservation )
+        booking_result = self.ron.write_reservation( reservation, key.payment_option)
 
         """
         To clarify further on the optional Pickup Point.
@@ -185,7 +187,7 @@ class Api( object ):
             )
             reservation['strPickupKey'] = tour_pickups[0]['strPickupKey']
             reservation['strGeneralComment'] += ' - No Pickup Sent'
-            booking_result = self.ron.write_reservation( reservation )
+            booking_result = self.ron.write_reservation( reservation, key.payment_option )
 
         # Logs response
         if booking_result:
@@ -222,6 +224,7 @@ class Api( object ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
             return self.viator.availability_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
+        self.update_payment_option()
 
         # Initial settings for query
         options = []
@@ -360,6 +363,8 @@ class Api( object ):
                 Mailer.send_wrong_payment_option(self.viator.host_id)
 
             key.save()
+
+        return key
 
 
     def tour_list_request( self ):
