@@ -360,7 +360,7 @@ class Api( object ):
 
             else:
                 key.payment_option = "full-agent"
-                Mailer.send_wrong_payment_option(self.viator.host_id)
+                Mailer.send_wrong_payment_option(self.viator.host_id, self.mode)
 
             key.save()
 

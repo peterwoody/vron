@@ -30,13 +30,16 @@ from django.utils.translation import ugettext as _
 class Mailer( object ):
 
     @staticmethod
-    def send_wrong_payment_option(supplier_name):
+    def send_wrong_payment_option(supplier_name, mode):
 
         to = settings.EMAIL_PAYMENT_OPTION_TO
         from_email = settings.EMAIL_HOST_USER
         subject = "ERROR (VRON) : Invalid payment option"
 
-        message = get_template('connector/email_payment_option.html').render(Context({"supplier_name": supplier_name}))
+        message = get_template('connector/email_payment_option.html').render(Context({
+            "supplier_name": supplier_name,
+            "mode": mode})
+        )
         msg = EmailMessage(subject, message, to=to, from_email=from_email)
         msg.content_subtype = 'html'
         msg.send()
