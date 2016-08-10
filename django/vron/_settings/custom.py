@@ -63,8 +63,8 @@ INTERNAL_IPS = (
 #########################################
 
 # SMTP Config
-ADMINS = (('Ademar Victorino', 'ademarvictorino@gmail.com'),) # ERROR EMAILS
-EMAIL_PAYMENT_OPTION_TO = ["support@respax.com"]
+ADMINS = (('Support Respax', 'support@respax.com'),) # ERROR EMAILS
+EMAIL_PAYMENT_OPTION_TO = ['support@respax.com']
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp-tls.respax.com'
 EMAIL_HOST_USER = 'support@respax.com.au'
