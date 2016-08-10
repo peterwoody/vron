@@ -34,7 +34,7 @@ class Api( object ):
 
     """
 
-    def __init__( self, xml_raw, mode = 'train' ):
+    def __init__( self, xml_raw, mode='train' ):
         """
         Constructor responsible to set class attributes and
         to process the right request
@@ -53,6 +53,7 @@ class Api( object ):
         # Instantiates class attributes
         self.mode = mode
         self.config_info = config
+        self.xml_raw = xml_raw
         self.request_xml = XmlManager( xml_raw )
         self.response_xml = XmlManager()
         self.ron = Ron( config, mode )
@@ -125,7 +126,7 @@ class Api( object ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
             return self.viator.booking_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
-        key = self.update_payment_option()
+        key = self.update_payment_option(True)
 
         # Get tour pickups details if needed
         pickup_point = self.viator.get_pickup_point()
@@ -224,7 +225,7 @@ class Api( object ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
             return self.viator.availability_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
-        self.update_payment_option()
+        self.update_payment_option(False)
 
         # Initial settings for query
         options = []
@@ -322,7 +323,7 @@ class Api( object ):
         # Returnx XML formatted response
         return self.viator.availability_response( availability_results, self.ron.error_message )
 
-    def update_payment_option(self):
+    def update_payment_option(self, send_raw_xml=False):
 
         '''
 
@@ -360,7 +361,10 @@ class Api( object ):
 
             else:
                 key.payment_option = "full-agent"
-                Mailer.send_wrong_payment_option(self.viator.host_id, self.mode)
+                if send_raw_xml:
+                    Mailer.send_wrong_payment_option(self.viator.host_id, self.mode, self.xml_raw)
+                else:
+                    Mailer.send_wrong_payment_option(self.viator.host_id, self.mode)
 
             key.save()
 

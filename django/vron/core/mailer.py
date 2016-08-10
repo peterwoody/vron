@@ -11,6 +11,7 @@ Mailer.send_welcome_email( user )
 # Imports
 ##########################
 from django.core.mail import EmailMessage
+from django.template.defaultfilters import slugify
 from django.template.loader import get_template, render_to_string
 from django.template import Context
 from django.conf import settings
@@ -30,7 +31,7 @@ from django.utils.translation import ugettext as _
 class Mailer( object ):
 
     @staticmethod
-    def send_wrong_payment_option(supplier_name, mode):
+    def send_wrong_payment_option(supplier_name, mode, raw_xml=None):
 
         to = settings.EMAIL_PAYMENT_OPTION_TO
         from_email = settings.EMAIL_HOST_USER
@@ -40,7 +41,13 @@ class Mailer( object ):
             "supplier_name": supplier_name,
             "mode": mode})
         )
+
         msg = EmailMessage(subject, message, to=to, from_email=from_email)
+        try:
+            if raw_xml:
+                msg.attach(u"{0}.xml".format(slugify(supplier_name)), raw_xml, 'text/xml')
+        except:
+            pass
         msg.content_subtype = 'html'
         msg.send()
 

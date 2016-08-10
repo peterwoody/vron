@@ -19,6 +19,7 @@ import requests
 
 ######################
 # API Views
+# test using this url: http://localhost:8000/connector/api/?debug&config=train
 #######################
 @csrf_exempt
 def api( request ):
