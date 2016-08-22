@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AvailabilityRequest xmlns="http://toursgds.com/api/01">
+    <ApiKey>8Jkw98HQDKlhG342801shkUi3eDBCGI</ApiKey>
+    <ResellerId>1000</ResellerId>
+    <SupplierId>1727</SupplierId>
+    <ExternalReference>332018172714285862600948402984</ExternalReference>
+    <Timestamp>2016-08-16T05:30:25.799-07:00</Timestamp>
+    <Parameter>
+        <Name>AgeBandMap</Name>
+        <Value>A=P1;C=P3;Y=P1;I=P5;S=P1</Value>
+    </Parameter>
+    <StartDate>2016-08-16</StartDate>
+    <DeltaOnly>false</DeltaOnly>
+    <SupplierProductCode>FDRR</SupplierProductCode>
+    <TourOptions>
+        <Option>
+            <Name>Basis</Name>
+            <Value>B=8;S=17;T=3</Value>
+        </Option>
+    </TourOptions>
+    <AvailabilityHold>
+        <Expiry>PT300S</Expiry>
+    </AvailabilityHold>
+    <TravellerMix>
+        <Adult>3</Adult>
+        <Child>0</Child>
+        <Youth>0</Youth>
+        <Infant>0</Infant>
+        <Senior>0</Senior>
+        <Total>3</Total>
+    </TravellerMix>
+</AvailabilityRequest>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<BookingRequest xmlns="http://toursgds.com/api/01">
+    <ApiKey>8Jkw98HQDKlhG342801shkUi3eDBCGI</ApiKey>
+    <ResellerId>1000</ResellerId>
+    <SupplierId>1727</SupplierId>
+    <ExternalReference>3320181727142858682350658369573</ExternalReference>
+    <Timestamp>2016-08-16T05:30:31.433-07:00</Timestamp>
+    <Parameter>
+        <Name>AgeBandMap</Name>
+        <Value>A=P1;C=P3;Y=P1;I=P5;S=P1</Value>
+    </Parameter>
+    <BookingReference>583884981</BookingReference>
+    <TravelDate>2016-08-16</TravelDate>
+    <SupplierProductCode>FDRR</SupplierProductCode>
+    <Location>Cairns &amp; the Tropical North</Location>
+    <TourOptions>
+        <Option>
+            <Name>Basis</Name>
+            <Value>B=8;S=17;T=3</Value>
+        </Option>
+    </TourOptions>
+    <Inclusions>
+        <Inclusion>Cruise transfers to and from Green Island by modern air-conditioned catamaran</Inclusion>
+        <Inclusion>Hotel pickup and drop-off (if option selected)</Inclusion>
+        <Inclusion>Morning tea / coffee</Inclusion>
+        <Inclusion>Buffet lunch (if option selected)</Inclusion>
+        <Inclusion>Choice of a glass-bottom boat tour or use of snorkeling gear for the day</Inclusion>
+        <Inclusion>Semi-submersible tour (if option is selected)</Inclusion>
+        <Inclusion>Environmental Management Charge (Reef Tax)</Inclusion>
+    </Inclusions>
+    <CurrencyCode>AUD</CurrencyCode>
+    <Amount>239.25</Amount>
+    <Traveller>
+        <TravellerIdentifier>1</TravellerIdentifier>
+        <GivenName>William</GivenName>
+        <Surname>Heyneman</Surname>
+        <AgeBand>ADULT</AgeBand>
+        <LeadTraveller>true</LeadTraveller>
+    </Traveller>
+    <Traveller>
+        <TravellerIdentifier>2</TravellerIdentifier>
+        <GivenName>Dirk</GivenName>
+        <Surname>Heyneman</Surname>
+        <AgeBand>ADULT</AgeBand>
+        <LeadTraveller>false</LeadTraveller>
+    </Traveller>
+    <Traveller>
+        <TravellerIdentifier>3</TravellerIdentifier>
+        <GivenName>Rina</GivenName>
+        <Surname>Heyneman</Surname>
+        <AgeBand>ADULT</AgeBand>
+        <LeadTraveller>false</LeadTraveller>
+    </Traveller>
+    <TravellerMix>
+        <Adult>3</Adult>
+        <Child>0</Child>
+        <Youth>0</Youth>
+        <Infant>0</Infant>
+        <Senior>0</Senior>
+        <Total>3</Total>
+    </TravellerMix>
+    <ContactDetail>
+        <ContactType>ALTERNATE</ContactType>
+        <ContactName>William Heyneman</ContactName>
+        <ContactValue>61452579882</ContactValue>
+    </ContactDetail>
+</BookingRequest>

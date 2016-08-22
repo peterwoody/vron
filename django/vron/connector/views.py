@@ -32,7 +32,7 @@ def api( request ):
 
     # Reads XML content
     if 'debug' in request.GET:
-        response = requests.get( "https://vron-test.respax.com/static/viator_booking_tw.xml" )
+        response = requests.get("http://localhost:8000/static/viator_booking_booking_bcgi.xml")
         #http://localhost:8000/static/viator_booking_tw.xml
         xml_raw = response.content
     elif request.method == 'POST':
