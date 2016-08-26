@@ -434,7 +434,7 @@ class Viator( XmlManager ):
             if tour_options:
                 language = self.request_xml.get_element( 'Language', tour_options )
                 if language:
-                    language_code = self.request_xml.get_element_text( 'LanguageCode', language )
+                    language_code = self.request_axml.get_element_text( 'LanguageCode', language )
                     if language_code:
                         self.append_to_general_comments( 'Language code: ' + str( language_code ) )
                     language_option = self.request_xml.get_element_text( 'LanguageOption', language )
@@ -644,6 +644,9 @@ class Viator( XmlManager ):
                         self.pax_child = total_pax_per_type['P3']
                         self.pax_foc = total_pax_per_type['P4']
                         self.pax_udef1 = total_pax_per_type['P5']
+
+    def get_traveller_mix_total(self):
+        return int(self.request_xml.get_element_text( "Total", self.request_xml.get_element('TravellerMix')))
 
     def append_to_general_comments( self, value ):
         """
