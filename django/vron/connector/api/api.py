@@ -233,6 +233,7 @@ class Api( object ):
         start_date = self.viator.get_start_date()
         end_date = self.viator.get_end_date()
         tour_code = self.viator.get_tour_code()
+        pax_total = self.viator.get_traveller_mix_total()
         interval_start_date = ''
         interval_end_date = ''
 
@@ -321,7 +322,7 @@ class Api( object ):
         self.log_request( settings.ID_LOG_STATUS_COMPLETE_APPROVED, self.viator.get_external_reference() )
 
         # Returnx XML formatted response
-        return self.viator.availability_response( availability_results, self.ron.error_message )
+        return self.viator.availability_response( availability_results, self.ron.error_message, pax_total=pax_total )
 
     def update_payment_option(self, send_raw_xml=False):
 
