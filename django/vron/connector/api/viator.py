@@ -718,7 +718,7 @@ class Viator( XmlManager ):
         return self.response_xml.return_xml_string()
 
     def availability_response( self, results, transaction_error, request_error_code = None,
-                               request_error_tag = None, request_error_message = None ):
+                               request_error_tag = None, request_error_message = None, pax_total=0 ):
         """
         Formats response in XML for VIATOR
 
@@ -772,7 +772,9 @@ class Viator( XmlManager ):
 
                 # creates status element
                 availability_status = self.response_xml.create_element( 'AvailabilityStatus', tour_availability )
-                status = 'AVAILABLE' if result['intAvailability'] > 0 else 'UNAVAILABLE'
+                status = 'AVAILABLE'
+                if pax_total > result['intAvailability']:
+                    status = 'UNAVAILABLE'
                 self.response_xml.create_element( 'Status', availability_status, status )
                 if status == 'UNAVAILABLE':
                     unavailability_reason = 'SOLD_OUT' if result['boolTrip'] else 'BLOCKED_OUT'
