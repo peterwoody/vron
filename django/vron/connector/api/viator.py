@@ -52,7 +52,7 @@ class Viator( XmlManager ):
         self.sub_basis_id = ''
         self.tour_time_id = ''
         self.basis = ''
-        self.supplier_option_name = ''
+        self.package_comment = ''
         self.parameters = ''
         self.age_band_map = ''
         self.pax_adults = ''
@@ -495,9 +495,9 @@ class Viator( XmlManager ):
                 for option in options:
                     self.append_to_general_comments( 'Remark: ' + str( option.text ) )
                     
-        # Gets Supplier Option Name information added by ademar 30/08/2016
-        if 'Supplier Option Name:' not in self.general_comments and self.supplier_option_name:
-            self.append_to_general_comments( 'Supplier Option Name: ' + self.supplier_option_name )
+        # Gets Package comment information added by ademar 01/09/2016
+        if 'Package comment:' not in self.general_comments and self.package_comment:
+            self.append_to_general_comments( 'Package comment: {0}'.format(self.package_comment) )
 
         return self.general_comments
 
@@ -582,8 +582,8 @@ class Viator( XmlManager ):
                         if name == 'Basis':
                             self.basis = value
                             self.get_basis_values()
-                        elif name == 'SupplierOptionName': 
-                            self.supplier_option_name = value
+                        elif name == 'PackageComment': #PackageComment task
+                            self.package_comment = value
         return self.tour_options
 
     def get_basis_values( self ):
