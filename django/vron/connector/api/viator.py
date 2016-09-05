@@ -653,7 +653,21 @@ class Viator( XmlManager ):
                         self.pax_udef1 = total_pax_per_type['P5']
 
     def get_traveller_mix_total(self):
-        return int(self.request_xml.get_element_text( "Total", self.request_xml.get_element('TravellerMix')))
+        traveller_mix = self.request_xml.get_element( 'TravellerMix' )
+        if traveller_mix:
+
+            total_pax = self.request_xml.get_element_text( 'Total', traveller_mix )
+            if total_pax:
+                return int(total_pax)
+            else:
+                total_pax = 0
+                tags = ['Adult', 'Child', 'Youth', 'Infant', 'Senior']
+                for tag in tags:
+                    val = self.request_xml.get_element_text( tag, traveller_mix )
+                    if val:
+                        total_pax += int(val)
+                return total_pax
+        return 0
 
     def append_to_general_comments( self, value ):
         """
