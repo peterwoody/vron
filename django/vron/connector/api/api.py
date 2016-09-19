@@ -225,7 +225,7 @@ class Api( object ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
             return self.viator.availability_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
-        self.update_payment_option(False)
+        self.update_payment_option(True)
 
         # Initial settings for query
         options = []
@@ -398,7 +398,7 @@ class Api( object ):
             self.log_request( settings.ID_LOG_STATUS_ERROR, self.viator.get_external_reference(), self.errors['VRONERR003'] )
             return self.viator.tour_list_response( '', '', 'VRONERR003', 'ResellerId', self.errors['VRONERR003'] )
 
-        self.update_payment_option()
+        self.update_payment_option(True)
 
         # Initial settings for the query
         tour_list = []
