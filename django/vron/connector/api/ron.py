@@ -49,7 +49,7 @@ class Ron( object ):
 
         :return: Mixed
         """
-        if self.ron_session_id:
+        if not "PHPSESSID" in self.url && self.ron_session_id:
             self.url += '&' + self.ron_session_id
         return xmlrpclib.ServerProxy( self.url )
 
